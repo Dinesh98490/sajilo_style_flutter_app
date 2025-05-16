@@ -6,6 +6,10 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: SplashScreenView());
+    return MaterialApp(
+      title: "Sajilo Style",
+      debugShowCheckedModeBanner: false,
+      
+      home: SplashScreenView());
   }
 }
