@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sajilo_style/view/dashboard.dart';
 import 'package:sajilo_style/view/signup.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -82,9 +84,7 @@ class _LoginState extends State<Login> {
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureText
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
@@ -138,17 +138,47 @@ class _LoginState extends State<Login> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      // Proceed with login logic
-                      print("Logging in with: ${emailController.text}");
+                      String email = emailController.text.trim();
+                      String password = passwordController.text;
+
+                      if (email == 'admin@gmail.com' &&
+                          password == 'admin123') {
+                        Fluttertoast.showToast(
+                          msg: "Login Successfully",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
+
+                        Future.delayed(const Duration(seconds: 1), () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Dashboard(),
+                            ),
+                          );
+                        });
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: "Incorrect email or password",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
+                      }
                     }
                   },
+
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
                     minimumSize: const Size(double.infinity, 60),
                   ),
                   child: const Text('Login'),
                 ),
-
                 const SizedBox(height: 30),
 
                 // Divider
@@ -178,15 +208,18 @@ class _LoginState extends State<Login> {
                       onPressed: () {
                         // Facebook login
                       },
-                      icon: const Icon(Icons.facebook, size: 34, color: Colors.blue),
+                      icon: const Icon(
+                        Icons.facebook,
+                        size: 34,
+                        color: Colors.blue,
+                      ),
                     ),
                     const SizedBox(width: 10),
-                    Image.asset("assets/images/google_image.png",
-                    height: 30,
-                    width: 30,
-                    )
-                    
-                    
+                    Image.asset(
+                      "assets/images/google_image.png",
+                      height: 30,
+                      width: 30,
+                    ),
                   ],
                 ),
 

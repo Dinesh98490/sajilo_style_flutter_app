@@ -32,7 +32,7 @@ Widget build(BuildContext context) {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Increased size of the logo
+          
           Image.asset(
             
             "assets/logos/logo.png",
@@ -40,9 +40,9 @@ Widget build(BuildContext context) {
             height: 300, 
             
           ),
-          const SizedBox(height: 30), // Slightly increased spacing
-          const CircularProgressIndicator(color: Colors.white),
-          const SizedBox(height: 20),
+          // const SizedBox(height: 30), 
+          // const CircularProgressIndicator(color: Colors.white),
+          // const SizedBox(height: 20),
         ],
       ),
     ),

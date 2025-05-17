@@ -164,7 +164,8 @@ class _SignupState extends State<Signup> {
                         gravity: ToastGravity.BOTTOM,
                         backgroundColor: Colors.green,
                         textColor: Colors.white,
-                        fontSize: 16.0,
+                        fontSize: 16.0
+                       
                       );
 
                       Future.delayed(const Duration(seconds: 3), () {

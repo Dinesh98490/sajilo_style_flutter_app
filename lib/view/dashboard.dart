@@ -10,6 +10,17 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('SajiloStyle'),
+        backgroundColor: Colors.orange,
+        actions: [
+         
+          
+        ],
+      ),
+     
+      
+    );
   }
 }
