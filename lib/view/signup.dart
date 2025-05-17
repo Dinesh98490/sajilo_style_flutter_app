@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sajilo_style/view/login.dart';
 
 class Signup extends StatefulWidget {
@@ -9,7 +10,7 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  final _formKey = GlobalKey<FormState>(); // <-- Form key for validation
+  final _formKey = GlobalKey<FormState>();
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -28,12 +29,11 @@ class _SignupState extends State<Signup> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Form(
-            key: _formKey, // Assign form key here
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-
                 Center(
                   child: Image.asset(
                     'assets/logos/logo.png',
@@ -41,9 +41,7 @@ class _SignupState extends State<Signup> {
                     width: 300,
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 const Text(
                   'Create an Account',
                   textAlign: TextAlign.center,
@@ -54,10 +52,9 @@ class _SignupState extends State<Signup> {
                     letterSpacing: 1.2,
                   ),
                 ),
-
                 const SizedBox(height: 30),
 
-                // Name TextFormField with validator
+                // Name
                 TextFormField(
                   controller: nameController,
                   decoration: const InputDecoration(
@@ -72,10 +69,9 @@ class _SignupState extends State<Signup> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 20),
 
-                // Email TextFormField with validator
+                // Email
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -87,14 +83,12 @@ class _SignupState extends State<Signup> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Email is required';
                     }
-                    // You can add email format validation here if needed
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 20),
 
-                // Password TextFormField with validator
+                // Password
                 TextFormField(
                   controller: passwordController,
                   obscureText: _obscurePassword,
@@ -125,10 +119,9 @@ class _SignupState extends State<Signup> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 20),
 
-                // Confirm Password TextFormField with validator
+                // Confirm Password
                 TextFormField(
                   controller: confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
@@ -159,18 +152,30 @@ class _SignupState extends State<Signup> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 30),
 
+                // Sign Up Button
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Login()),
+                      Fluttertoast.showToast(
+                        msg: "Signup Successfully",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
                       );
+
+                      Future.delayed(const Duration(seconds: 3), () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Login(),
+                          ),
+                        );
+                      });
                     }
-                    // else, error messages show automatically
                   },
                   child: const Text('Sign Up'),
                   style: ElevatedButton.styleFrom(
@@ -179,7 +184,6 @@ class _SignupState extends State<Signup> {
                   ),
                 ),
 
-                // Divider
                 const SizedBox(height: 30),
                 Row(
                   children: [
@@ -197,13 +201,18 @@ class _SignupState extends State<Signup> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                // Facebook and Google login buttons
+
+                // Social Logins
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
                       onPressed: () {},
-                      icon: Icon(Icons.facebook, size: 34, color: Colors.blue),
+                      icon: const Icon(
+                        Icons.facebook,
+                        size: 34,
+                        color: Colors.blue,
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Image.asset(
@@ -213,9 +222,9 @@ class _SignupState extends State<Signup> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 30),
 
+                // Login Navigation
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
