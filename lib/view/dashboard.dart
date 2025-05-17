@@ -12,9 +12,10 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SajiloStyle'),
+        title: const Text('Dashboard'),
         backgroundColor: Colors.orange,
         actions: [
+        
          
           
         ],
