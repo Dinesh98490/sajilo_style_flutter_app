@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:sajilo_style/view/signup.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  const Login({super.key});
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  Login({super.key});
+  final _formKey = GlobalKey<FormState>();
+  bool _obscureText = true;
+  bool rememberMe = false;
 
   @override
   Widget build(BuildContext context) {
@@ -13,150 +23,195 @@ class Login extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 50),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 50),
 
-              // Logo
-              Center(
-                child: Image.asset(
-                  'assets/logos/logo.png',
-                  height: 200,
-                  width: 300,
-                ),
-              ),
-
-              const SizedBox(height: 2),
-
-              const Text(
-                'Sign in to Continue',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 8, 8, 8),
-                  letterSpacing: 1.2,
-                ),
-              ),
-
-              // Add this gap below the text
-              const SizedBox(height: 30), // Adjust the height as needed
-              // Email TextField
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Password TextField
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-
-
-              // Remember Me and Forgot Password Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      StatefulBuilder(
-                        builder: (context, setState) {
-                          bool rememberMe = false;
-                          return Checkbox(
-                            value: rememberMe,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                rememberMe = value ?? false;
-                              });
-                            },
-                          );
-                        },
-                      ),
-                      const Text('Remember Me'),
-                    ],
+                // Logo
+                Center(
+                  child: Image.asset(
+                    'assets/logos/logo.png',
+                    height: 200,
+                    width: 300,
                   ),
-                  TextButton(
-                    onPressed: () {
-                      // Handle forgot password
-                    },
-                    child: const Text(
-                      'Forgot Password?',
-                      style: TextStyle(color: Colors.blue),
+                ),
+
+                const SizedBox(height: 2),
+
+                const Text(
+                  'Sign in to Continue',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 8, 8, 8),
+                    letterSpacing: 1.2,
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // Email TextFormField
+                TextFormField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Email is required';
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 20),
+
+                // Password TextFormField
+                TextFormField(
+                  controller: passwordController,
+                  obscureText: _obscureText,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: const Icon(Icons.lock),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
                     ),
                   ),
-                ],
-              ),
-
-              ElevatedButton(
-                onPressed: () {
-                  // Handle login
-                },
-                child: const Text('Login'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange, // Set button color to orange
-                  minimumSize: const Size(double.infinity, 60),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password is required';
+                    }
+                    return null;
+                  },
                 ),
-              ),
 
-              
+                const SizedBox(height: 20),
 
-
-              const SizedBox(height: 30),
-
-              const Text(
-                'Or login with',
-                style: TextStyle(
-                  fontSize: 18, 
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
+                // Remember Me and Forgot Password
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: rememberMe,
+                          checkColor: Colors.white,
+                          activeColor: Colors.orange,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              rememberMe = value ?? false;
+                            });
+                          },
+                        ),
+                        const Text('Remember Me'),
+                      ],
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        // Forgot password action
+                      },
+                      child: const Text(
+                        'Forgot Password?',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
 
-              const SizedBox(height: 20),
-
-              // Facebook and Google login buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.facebook, size: 34, color: Colors.blue),
+                // Login Button
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // Proceed with login logic
+                      print("Logging in with: ${emailController.text}");
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    minimumSize: const Size(double.infinity, 60),
                   ),
-                ],
-              ),
+                  child: const Text('Login'),
+                ),
 
-              const SizedBox(height: 30),
+                const SizedBox(height: 30),
 
-              // Register Option
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Don't have an account?"),
-                  TextButton(
-                    onPressed: () {
-                      // Navigate to Register screen
-                    },
-                    child: const Text('Register'),
-                  ),
-                ],
-              ),
-            ],
+                // Divider
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        "OR",
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 101, 97, 97),
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                // Social login (Facebook + Google)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        // Facebook login
+                      },
+                      icon: const Icon(Icons.facebook, size: 34, color: Colors.blue),
+                    ),
+                    const SizedBox(width: 10),
+                    Image.asset("assets/images/google_image.png",
+                    height: 30,
+                    width: 30,
+                    )
+                    
+                    
+                  ],
+                ),
+
+                const SizedBox(height: 30),
+
+                // Register redirect
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don't have an account?"),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Signup(),
+                          ),
+                        );
+                      },
+                      child: const Text('Register'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
