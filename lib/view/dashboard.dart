@@ -52,7 +52,7 @@ class _DashboardState extends State<Dashboard> {
             label: 'Favourite',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
+            icon: Icon(Icons.add_card),
             label: 'Wishlist',
           ),
           BottomNavigationBarItem(
