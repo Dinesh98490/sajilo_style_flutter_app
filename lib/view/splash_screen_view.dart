@@ -40,9 +40,7 @@ Widget build(BuildContext context) {
             height: 300, 
             
           ),
-          // const SizedBox(height: 30), 
-          // const CircularProgressIndicator(color: Colors.white),
-          // const SizedBox(height: 20),
+        
         ],
       ),
     ),
