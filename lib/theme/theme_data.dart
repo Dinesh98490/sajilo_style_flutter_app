@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 ThemeData getApplicationTheme(){
   return ThemeData(
       useMaterial3: false,
-      primarySwatch: Colors.blue,
+      primarySwatch: Colors.orange,
       fontFamily: 'Open Sans Bold ',
       appBarTheme: const AppBarTheme(
         centerTitle: true,

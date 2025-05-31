@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sajilo_style/view/dashboard.dart';
+import 'package:sajilo_style/view/forget_password.dart';
 import 'package:sajilo_style/view/signup.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -124,8 +125,14 @@ class _LoginState extends State<Login> {
                     ),
                     TextButton(
                       onPressed: () {
-                        // Forgot password action
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ForgotPassword(),
+                          ),
+                        );
                       },
+
                       child: const Text(
                         'Forgot Password?',
                         style: TextStyle(color: Colors.black),
