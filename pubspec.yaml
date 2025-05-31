@@ -80,8 +80,8 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  
-fonts:
+
+  fonts:
     - family: Open Sans Bold 
       fonts:
         - asset: assets/fonts/opensans/OpenSans-Bold.ttf
@@ -90,28 +90,29 @@ fonts:
       fonts:
         - asset: assets/fonts/opensans/OpenSans-Italic.ttf
     
-    - family: Open Sans Regular
+    - family: Open Sans Regular 
       fonts:
-        - asset: assets/fonts/opensans/OpenSans-Regular.ttf
+       - asset: assets/fonts/opensans/OpenSans-Regular.ttf
 
     - family: Lato Bold
       fonts:
         - asset: assets/fonts/lato/Lato-Bold.ttf
-    
+
     - family: Lato Italic
       fonts:
-        asset: assets/fonts/lato/Lato-Italic.ttf
-
-    - family: Lato Light
+       - asset: assets/fonts/lato/Lato-Italic.ttf
+    
+    - family : Lato Light
       fonts:
-        asset: assets/fonts/lato/Lato-Light.ttf
+       - asset: assets/fonts/lato/Lato-Light.ttf
     
     - family: Lato Regular
-      fonts:
-        asset: assets/fonts/lato/Lato-Regular.ttf
+      fonts: 
+       - asset: assets/fonts/lato/Lato-Regular.ttf
 
 
     
+
     
 
     
