@@ -67,7 +67,7 @@ class _DashboardState extends State<Dashboard> {
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-  final String userName = 'Dinesh';
+  final String userName = 'Dinesh'; 
 
   @override
   Widget build(BuildContext context) {
@@ -127,13 +127,13 @@ class HomePage extends StatelessWidget {
                 CategoryImageCard(
                   title: 'Women',
                   icon: Icons.female,
-                  color: Colors.pink,
+                  color: Color.fromARGB(255, 174, 159, 164),
                   imagePath: 'assets/images/women.jpg',
                 ),
                 CategoryImageCard(
                   title: 'Kids',
                   icon: Icons.child_care,
-                  color: Colors.purple,
+                  color: Color.fromARGB(255, 132, 110, 136),
                   imagePath: 'assets/images/kids.jpg',
                 ),
               ],
