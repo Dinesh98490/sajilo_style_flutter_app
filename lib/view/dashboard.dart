@@ -234,7 +234,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// --- Components ---
+
 
 class CategoryImageCard extends StatelessWidget {
   final String title;
@@ -316,8 +316,8 @@ class OfferCard extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Image.asset(
                   imagePath!,
-                  width: 60,
-                  height: 60,
+                  width: 100, // size of the image
+                  height: 100,
                   fit: BoxFit.cover,
                 ),
               )
