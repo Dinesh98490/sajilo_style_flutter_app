@@ -171,7 +171,7 @@ class HomePage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color.fromARGB(255, 227, 224, 224), //color of the main sections of the dashbboard
                   ),
                 ),
                 SizedBox(height: 10),
