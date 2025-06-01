@@ -90,7 +90,7 @@ class HomePage extends StatelessWidget {
           // Search bar
           TextField(
             decoration: InputDecoration(
-              hintText: 'Search for products...',
+              hintText: 'Search for products', // search bar
               prefixIcon: const Icon(Icons.search),
               filled: true,
               fillColor: Colors.grey[200],
