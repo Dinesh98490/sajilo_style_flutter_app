@@ -4,6 +4,9 @@ import 'package:sajilo_style/app/use_case/use_case.dart';
 import 'package:sajilo_style/core/error/failure.dart';
 import 'package:sajilo_style/features/auth/domain/repository/user_repository.dart';
 
+
+
+// login usecase 
 class LoginParams extends Equatable{
   final String email;
   final String password;
