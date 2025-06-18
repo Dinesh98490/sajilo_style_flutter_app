@@ -6,6 +6,8 @@ import 'package:sajilo_style/features/auth/presentation/view/register_view.dart'
 import 'package:sajilo_style/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
 import 'package:sajilo_style/features/home/presentation/view/home_view.dart';
 
+
+//login view
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
