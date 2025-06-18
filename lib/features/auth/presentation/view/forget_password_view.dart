@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
-class ForgotPassword extends StatefulWidget {
-  const ForgotPassword({super.key});
+class ForgetPasswordView extends StatefulWidget {
+  const ForgetPasswordView({super.key});
 
   @override
-  State<ForgotPassword> createState() => _ForgotPasswordState();
+  State<ForgetPasswordView> createState() => _ForgetPasswordViewState();
 }
 
-class _ForgotPasswordState extends State<ForgotPassword> {
+class _ForgetPasswordViewState extends State<ForgetPasswordView> {
   final TextEditingController emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -16,18 +15,20 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     final email = emailController.text.trim();
 
     if (_formKey.currentState!.validate()) {
-      // Simulate sending a reset link
-      Fluttertoast.showToast(
-        msg: "Reset link sent to $email",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.blue,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      // Show a snackbar on successful email input
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Reset link sent to $email"),
+          backgroundColor: Colors.blue,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
       );
 
-      // Optionally: Navigate back to login or stay on page
-      Navigator.pop(context);
+      // Close the screen after delay
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pop(context);
+      });
     }
   }
 

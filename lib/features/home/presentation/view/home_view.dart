@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+class HomeView extends StatefulWidget {
+  const HomeView({super.key});
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<HomeView> createState() => _HomeState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _HomeState extends State<HomeView> {
   int _selectedIndex = 0;
 
   static const List<Widget> _pages = <Widget>[

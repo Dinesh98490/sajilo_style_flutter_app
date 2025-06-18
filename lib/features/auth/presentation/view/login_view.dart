@@ -1,25 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:sajilo_style/view/login.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sajilo_style/app/service_locator/service_locator.dart';
+import 'package:sajilo_style/features/auth/presentation/view/forget_password_view.dart';
+import 'package:sajilo_style/features/auth/presentation/view/register_view.dart';
+import 'package:sajilo_style/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
+import 'package:sajilo_style/features/home/presentation/view/home_view.dart';
 
-class Signup extends StatefulWidget {
-  const Signup({super.key});
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<Signup> createState() => _SignupState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _SignupState extends State<Signup> {
-  final _formKey = GlobalKey<FormState>();
-
-  final TextEditingController nameController = TextEditingController();
+class _LoginViewState extends State<LoginView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  bool _obscureText = true;
+  bool rememberMe = false;
+
+  void showSnackBar(String message, Color bgColor) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: bgColor,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +48,13 @@ class _SignupState extends State<Signup> {
                 Center(
                   child: Image.asset(
                     'assets/logos/logo.png',
-                    height: 100,
+                    height: 200,
                     width: 300,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 2),
                 const Text(
-                  'Create an Account',
+                  'Sign in to Continue',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
@@ -54,24 +65,7 @@ class _SignupState extends State<Signup> {
                 ),
                 const SizedBox(height: 30),
 
-                // Name
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Name',
-                    prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Name is required';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-
-                // Email
+                // Email field
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -80,7 +74,7 @@ class _SignupState extends State<Signup> {
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Email is required';
                     }
                     return null;
@@ -88,23 +82,21 @@ class _SignupState extends State<Signup> {
                 ),
                 const SizedBox(height: 20),
 
-                // Password
+                // Password field
                 TextFormField(
                   controller: passwordController,
-                  obscureText: _obscurePassword,
+                  obscureText: _obscureText,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock),
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
-                          _obscurePassword = !_obscurePassword;
+                          _obscureText = !_obscureText;
                         });
                       },
                     ),
@@ -113,84 +105,78 @@ class _SignupState extends State<Signup> {
                     if (value == null || value.isEmpty) {
                       return 'Password is required';
                     }
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
-                    }
                     return null;
                   },
                 ),
                 const SizedBox(height: 20),
 
-                // Confirm Password
-                TextFormField(
-                  controller: confirmPasswordController,
-                  obscureText: _obscureConfirmPassword,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    prefixIcon: const Icon(Icons.lock),
-                    border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
+                // Remember me & Forgot password
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: rememberMe,
+                          checkColor: Colors.white,
+                          activeColor: Colors.orange,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              rememberMe = value ?? false;
+                            });
+                          },
+                        ),
+                        const Text('Remember Me'),
+                      ],
                     ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Confirm password is required';
-                    }
-                    if (value != passwordController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 30),
-
-                // Sign Up Button
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Fluttertoast.showToast(
-                        msg: "Signup Successfully",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        backgroundColor: Colors.green,
-                        textColor: Colors.white,
-                        fontSize: 16.0
-                       
-                      );
-
-                      Future.delayed(const Duration(seconds: 3), () {
+                    TextButton(
+                      onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const Login(),
+                            builder: (context) => ForgetPasswordView(),
                           ),
                         );
-                      });
-                    }
+                      },
+                      child: const Text(
+                        'Forgot Password?',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Login button
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                     MaterialPageRoute(builder: (context) => HomeView(),
+                    // if (_formKey.currentState!.validate()) {
+                    //   context.read<LoginViewModel>().add(
+                    //         LoginWithEmailAndPasswordEvent(
+                    //           context: context,
+                    //           email: emailController.text.trim(),
+                    //           password: passwordController.text,
+          
+                            ),
+                          );
+                    
                   },
-                  child: const Text('Sign Up'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
                     minimumSize: const Size(double.infinity, 60),
                   ),
+                  child: const Text('Login'),
                 ),
 
                 const SizedBox(height: 30),
+
+                // Divider
                 Row(
                   children: [
                     const Expanded(child: Divider()),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
                         "OR",
                         style: TextStyle(
@@ -201,14 +187,17 @@ class _SignupState extends State<Signup> {
                     const Expanded(child: Divider()),
                   ],
                 ),
-                const SizedBox(height: 10),
 
-                // Social Logins
+                const SizedBox(height: 20),
+
+                // Social login
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        // Facebook login logic here
+                      },
                       icon: const Icon(
                         Icons.facebook,
                         size: 34,
@@ -223,18 +212,27 @@ class _SignupState extends State<Signup> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 30),
 
-                // Login Navigation
+                // Register redirect
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Already have an account?"),
+                    const Text("Don't have an account?"),
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider<RegisterViewModel>.value(
+                              value: serviceLocator<RegisterViewModel>(),
+                              child: RegisterView(),
+                            ),
+                          ),
+                        );
                       },
-                      child: const Text('Login'),
+                      child: const Text('Register'),
                     ),
                   ],
                 ),

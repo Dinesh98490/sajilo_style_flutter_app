@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:sajilo_style/view/dashboard.dart';
-import 'package:sajilo_style/view/forget_password.dart';
-import 'package:sajilo_style/view/signup.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sajilo_style/features/auth/presentation/view_model/register_view_model/register_event.dart';
+import 'package:sajilo_style/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class RegisterView extends StatefulWidget {
+  const RegisterView({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<RegisterView> createState() => _RegisterViewState();
 }
 
-class _LoginState extends State<Login> {
+class _RegisterViewState extends State<RegisterView> {
+  final _formKey = GlobalKey<FormState>();
+
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>();
-  bool _obscureText = true;
-  bool rememberMe = false;
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -32,20 +33,17 @@ class _LoginState extends State<Login> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-
-                // Logo
                 Center(
                   child: Image.asset(
                     'assets/logos/logo.png',
-                    height: 200,
+                    height: 100,
                     width: 300,
+                    fit: BoxFit.contain,
                   ),
                 ),
-
-                const SizedBox(height: 2),
-
+                const SizedBox(height: 10),
                 const Text(
-                  'Sign in to Continue',
+                  'Create an Account',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
@@ -54,10 +52,26 @@ class _LoginState extends State<Login> {
                     letterSpacing: 1.2,
                   ),
                 ),
-
                 const SizedBox(height: 30),
 
-                // Email TextFormField
+                // Name
+                TextFormField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    prefixIcon: Icon(Icons.person),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Name is required';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+
+                // Email
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -66,30 +80,29 @@ class _LoginState extends State<Login> {
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null || value.trim().isEmpty) {
                       return 'Email is required';
                     }
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 20),
 
-                // Password TextFormField
+                // Password
                 TextFormField(
                   controller: passwordController,
-                  obscureText: _obscureText,
+                  obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock),
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
-                          _obscureText = !_obscureText;
+                          _obscurePassword = !_obscurePassword;
                         });
                       },
                     ),
@@ -98,102 +111,60 @@ class _LoginState extends State<Login> {
                     if (value == null || value.isEmpty) {
                       return 'Password is required';
                     }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 20),
 
-                // Remember Me and Forgot Password
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: rememberMe,
-                          checkColor: Colors.white,
-                          activeColor: Colors.orange,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              rememberMe = value ?? false;
-                            });
-                          },
-                        ),
-                        const Text('Remember Me'),
-                      ],
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ForgotPassword(),
-                          ),
-                        );
-                      },
-
-                      child: const Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ],
+                // Phone Number
+                TextFormField(
+                  controller: phoneNumberController,
+                  decoration: const InputDecoration(
+                    labelText: 'Phone Number',
+                    prefixIcon: Icon(Icons.phone_android),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Phone Number is required';
+                    }
+                    return null;
+                  },
                 ),
+                const SizedBox(height: 30),
 
-                // Login Button
+                // Sign Up Button with Bloc event dispatch
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      String email = emailController.text.trim();
-                      String password = passwordController.text;
-
-                      if (email == 'admin@gmail.com' &&
-                          password == 'admin123') {
-                        Fluttertoast.showToast(
-                          msg: "Login Successfully",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          backgroundColor: Colors.green,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-
-                        Future.delayed(const Duration(seconds: 1), () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Dashboard(),
-                            ),
-                          );
-                        });
-                      } else {
-                        Fluttertoast.showToast(
-                          msg: "Incorrect email or password",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          backgroundColor: Colors.red,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-                      }
+                      context.read<RegisterViewModel>().add(
+                        RegisterUserEvent(
+                          context: context,  // Required param
+                          fullName: nameController.text.trim(),
+                          email: emailController.text.trim(),
+                          password: passwordController.text,
+                          phoneNumber: phoneNumberController.text.trim(),
+                        ),
+                      );
                     }
                   },
-
+                  child: const Text('Sign Up'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
                     minimumSize: const Size(double.infinity, 60),
                   ),
-                  child: const Text('Login'),
                 ),
+
                 const SizedBox(height: 30),
 
-                // Divider
                 Row(
                   children: [
                     const Expanded(child: Divider()),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
                       child: Text(
                         "OR",
                         style: TextStyle(
@@ -204,16 +175,15 @@ class _LoginState extends State<Login> {
                     const Expanded(child: Divider()),
                   ],
                 ),
+                const SizedBox(height: 10),
 
-                const SizedBox(height: 20),
-
-                // Social login (Facebook + Google)
+                // Social Logins
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
                       onPressed: () {
-                        // Facebook login
+                        // TODO: Add Facebook login logic
                       },
                       icon: const Icon(
                         Icons.facebook,
@@ -229,24 +199,18 @@ class _LoginState extends State<Login> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 30),
 
-                // Register redirect
+                // Login Navigation
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don't have an account?"),
+                    const Text("Already have an account?"),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Signup(),
-                          ),
-                        );
+                        Navigator.pop(context);
                       },
-                      child: const Text('Register'),
+                      child: const Text('Login'),
                     ),
                   ],
                 ),
