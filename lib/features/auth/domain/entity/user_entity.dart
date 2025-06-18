@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
+
+// etntity of the user
 class UserEntity extends Equatable {
   final String? userId;
   final String  fullName;
