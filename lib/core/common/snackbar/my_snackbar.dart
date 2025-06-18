@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+
+// snackbar of the app 
 void showMySnackBar({
   required BuildContext context,
   required String message,
