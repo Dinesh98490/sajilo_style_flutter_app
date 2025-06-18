@@ -9,7 +9,7 @@ part 'user_hive_model.g.dart';
 
 
 
-
+// hive model of user
 @HiveType(typeId: HiveTableConstant.userTableId)
 class UserHiveModel extends Equatable {
 
