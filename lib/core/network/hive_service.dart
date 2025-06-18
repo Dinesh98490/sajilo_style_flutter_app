@@ -3,6 +3,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sajilo_style/app/constant/hive_table_constant.dart';
 import 'package:sajilo_style/features/auth/data/model/user_hive_model.dart';
 
+
+
+//hive service
 class HiveService {
   Future<void> init() async{
     // initialize the database
