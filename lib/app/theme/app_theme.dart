@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+
+// theme of the app
 class AppTheme {
   AppTheme._(); // Private constructor to prevent instantiation
 
