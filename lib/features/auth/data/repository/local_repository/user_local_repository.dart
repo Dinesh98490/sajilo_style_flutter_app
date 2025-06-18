@@ -12,6 +12,8 @@ import 'package:sajilo_style/features/auth/domain/entity/user_entity.dart';
 import 'package:sajilo_style/features/auth/domain/repository/user_repository.dart';
 
 
+
+// local repository
 class UserLocalRepository implements IUserRepository {
 
   final UserLocalDatasource _userLocalDatasource;
