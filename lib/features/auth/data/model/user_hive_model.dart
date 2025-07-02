@@ -48,7 +48,7 @@ class UserHiveModel extends Equatable {
       userId: entity.userId,
       fullName: entity.fullName,
        email: entity.email, 
-       phoneNumber: entity.phoneNumber, 
+       phoneNumber: entity.phone_number, 
        password: entity.password,
       
       );
@@ -60,8 +60,9 @@ class UserHiveModel extends Equatable {
     userId: userId,
     fullName: fullName,
     email: email,
-    phoneNumber: phoneNumber,
+    phone_number: phoneNumber,
     password: password,
+    role: "Customer"
     );
   }
 
@@ -74,6 +75,6 @@ class UserHiveModel extends Equatable {
     fullName,
     email,
     phoneNumber, 
-    password
+    password,
   ];
  }

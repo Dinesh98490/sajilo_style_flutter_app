@@ -8,22 +8,25 @@ import 'package:sajilo_style/features/auth/domain/repository/user_repository.dar
 class RegisterUserParams  extends Equatable {
   final String fullName;
   final String email;
-  final String phoneNumber;
+  final String phone_number;
   final String password;
+  final String role;
 
   const RegisterUserParams({
     required this.fullName,
     required this.email,
-    required this.phoneNumber,
+    required this.phone_number,
     required this.password,
+    required this.role
   });
 
   // initialize constructor 
   const RegisterUserParams.initial({
     required this.fullName,
     required this.email,
-    required this.phoneNumber,
+    required this.phone_number,
     required this.password,
+    required this.role
   });
 
 
@@ -31,8 +34,9 @@ class RegisterUserParams  extends Equatable {
   List<Object?> get props => [
     fullName,
     email,
-    phoneNumber, 
+    phone_number, 
     password,
+    role
   ];
 
 }
@@ -50,8 +54,10 @@ class UserRegisterUsercase implements UsecaseWithParams<void, RegisterUserParams
     final userEntity = UserEntity(
       fullName: params.fullName, 
       email: params.email, 
-      phoneNumber: params.phoneNumber, 
-      password: params.password
+      phone_number: params.phone_number, 
+      password: params.password,
+      role: params.role
+      
     );
     return _userRepository.registerUser(userEntity);
     

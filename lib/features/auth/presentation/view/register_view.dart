@@ -146,7 +146,7 @@ class _RegisterViewState extends State<RegisterView> {
                           fullName: nameController.text.trim(),
                           email: emailController.text.trim(),
                           password: passwordController.text,
-                          phoneNumber: phoneNumberController.text.trim(),
+                          phone_number: phoneNumberController.text.trim(),
                         ),
                       );
                     }

@@ -31,8 +31,9 @@ class RegisterViewModel  extends Bloc<RegisterEvent, RegisterState>{
       RegisterUserParams(
         fullName: event.fullName,
         email: event.email,
-        phoneNumber: event.phoneNumber,
+        phone_number: event.phone_number,
         password: event.password,
+        role:event.role
       ),
     );
      result.fold(

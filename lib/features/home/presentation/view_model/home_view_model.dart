@@ -1,26 +1,32 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sajilo_style/features/auth/presentation/view/login_view.dart';
 import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 import 'home_state.dart';
 
 class HomeViewModel extends Cubit<HomeState> {
+  
+
+  HomeViewModel({required this.loginViewModel}) : super(HomeState.initial());
+
   final LoginViewModel loginViewModel;
 
-  HomeViewModel({required this.loginViewModel}) : super(HomeInitial());
+    void onTabTapped(int index) {
+    emit(state.copyWith(selectedIndex: index));
+  }
 
-  void loadHomeData() {
-    emit(HomeLoading());
-
-    // Simulate a delay and fetch user data
-    Future.delayed(const Duration(seconds: 1), () {
-      try {
-        final userName = 'Dinesh';
-        emit(HomeLoaded(fullName: userName));
-      } catch (e) {
-        emit(HomeError(message: 'Failed to load home data'));
+  void logout(BuildContext context) {
+    // Wait for 2 seconds
+    Future.delayed(const Duration(seconds: 2), () async {
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                BlocProvider.value(value: loginViewModel, child: LoginView()),
+          ),
+        );
       }
     });
   }
-
-  // Optionally remove if not needed
-  void loadData() => loadHomeData();
 }

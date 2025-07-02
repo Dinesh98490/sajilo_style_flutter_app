@@ -1,30 +1,29 @@
 // home_state.dart
 
 import 'package:flutter/material.dart';
+import 'package:sajilo_style/features/home/presentation/view/home_view.dart';
 
-@immutable
-abstract class HomeState {
-  get offers => null;
+class HomeState {
+  final int selectedIndex;
+  final List<Widget> views;
 
-  get fullName => null;
+  const HomeState({required this.selectedIndex, required this.views});
 
-  get cate => null;
+  // Initial state
+  static HomeState initial() {
+    return HomeState(
+      selectedIndex: 0,
+      views: [
+        HomeView(),
+       
+      ],
+    );
+  }
 
-  
-}
-
-class HomeInitial extends HomeState {}
-
-class HomeLoading extends HomeState {}
-
-class HomeLoaded extends HomeState {
-  final String fullName;
-
-  HomeLoaded({required this.fullName});
-}
-
-class HomeError extends HomeState {
-  final String message;
-
-  HomeError({required this.message});
+  HomeState copyWith({int? selectedIndex, List<Widget>? views}) {
+    return HomeState(
+      selectedIndex: selectedIndex ?? this.selectedIndex,
+      views: views ?? this.views,
+    );
+  }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 
 import 'package:sajilo_style/features/auth/presentation/view/login_view.dart';
+import 'package:sajilo_style/features/splash/presentation/view_model/splash_view_model.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -19,10 +21,7 @@ class _SplashViewState extends State<SplashView> {
 
   void navigateToLogin() {
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginView()),
-      );
+     context.read<SplashViewModel>().init(context);
     });
   }
 

@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sajilo_style/app/service_locator/service_locator.dart';
 import 'package:sajilo_style/features/auth/presentation/view/forget_password_view.dart';
 import 'package:sajilo_style/features/auth/presentation/view/register_view.dart';
+import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_event.dart';
+import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 import 'package:sajilo_style/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
 import 'package:sajilo_style/features/home/presentation/view/home_view.dart';
 
@@ -150,18 +152,17 @@ class _LoginViewState extends State<LoginView> {
 
                 // Login button
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                     MaterialPageRoute(builder: (context) => HomeView(),
-                    // if (_formKey.currentState!.validate()) {
-                    //   context.read<LoginViewModel>().add(
-                    //         LoginWithEmailAndPasswordEvent(
-                    //           context: context,
-                    //           email: emailController.text.trim(),
-                    //           password: passwordController.text,
+                  onPressed: ()  async{
+                    if (_formKey.currentState!.validate()) {
+                      context.read<LoginViewModel>().add(
+                            LoginWithEmailAndPasswordEvent(
+                              context: context,
+                              email: emailController.text.trim(),
+                              password: passwordController.text,
           
                             ),
                           );
+                    }
                     
                   },
                   style: ElevatedButton.styleFrom(

@@ -1,10 +1,3 @@
-// class StudentLocalRepository implements IStudentRepository {
-//   final StudentLocalDatasource _studentLocalDatasource;
-
-//   StudentLocalRepository({
-//     required StudentLocalDatasource studentLocalDatasource,
-//   }) : _studentLocalDatasource = studentLocalDatasource;
-
 import 'package:dartz/dartz.dart';
 import 'package:sajilo_style/core/error/failure.dart';
 import 'package:sajilo_style/features/auth/data/data_source/local_datasource/user_local_datasource.dart';

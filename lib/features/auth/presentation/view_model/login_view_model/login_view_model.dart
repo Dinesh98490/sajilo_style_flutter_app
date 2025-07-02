@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sajilo_style/app/service_locator/service_locator.dart';
 import 'package:sajilo_style/core/common/snackbar/my_snackbar.dart';
 import 'package:sajilo_style/features/auth/domain/use_case/user_login_usecase.dart';
 import 'package:sajilo_style/features/auth/presentation/view/register_view.dart';
 import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_event.dart';
 import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_state.dart';
+import 'package:sajilo_style/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
 import 'package:sajilo_style/features/home/presentation/view/home_view.dart';
+import 'package:sajilo_style/features/home/presentation/view_model/home_view_model.dart';
 
 class LoginViewModel extends Bloc<LoginEvent, LoginState> {
   final UserLoginUsecase _userLoginUsecase;
@@ -28,7 +31,7 @@ class LoginViewModel extends Bloc<LoginEvent, LoginState> {
         MaterialPageRoute(
           builder: (context) => MultiBlocProvider(
             providers: [
-              // BlocProvider.value(value: serviceLocator<RegisterView>()),
+              BlocProvider.value(value: serviceLocator<RegisterViewModel>()),
             ],
             child: RegisterView(),
           ),
@@ -38,18 +41,21 @@ class LoginViewModel extends Bloc<LoginEvent, LoginState> {
   }
 
  void _onNavigateToHomeView(
-  NavigateToHomeViewEvent event,
-  Emitter<LoginState> emit,
-) {
-  if (event.context.mounted) {
-    Navigator.pushReplacement(
-      event.context,
-     MaterialPageRoute(builder: (context) => HomeView(),
-     ),
-    );
+    NavigateToHomeViewEvent event,
+    Emitter<LoginState> emit,
+  ) {
+    if (event.context.mounted) {
+      Navigator.pushReplacement(
+        event.context,
+        MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+            value: serviceLocator<HomeViewModel>(),
+            child: const HomeView(),
+          ),
+        ),
+      );
+    }
   }
-}
-
   void _onLoginWithEmailAndPassword(
     LoginWithEmailAndPasswordEvent event,
     Emitter<LoginState> emit,
