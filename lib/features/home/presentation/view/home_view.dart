@@ -24,6 +24,8 @@ class _HomeState extends State<HomeView> {
     });
   }
 
+// small chanegs on the design 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,8 +45,8 @@ class _HomeState extends State<HomeView> {
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.white,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: const [
