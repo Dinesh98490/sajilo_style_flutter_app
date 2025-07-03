@@ -4,6 +4,8 @@ class DioErrorInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     String errorMessage;
 
+
+    // error handling in the dio
     if (err.response != null) {
       final statusCode = err.response?.statusCode ?? 0;
       if (statusCode >= 300) {
