@@ -218,11 +218,12 @@ class _LoginViewState extends State<LoginView> {
 
                 const SizedBox(height: 30),
 
-                // Register redirect
+                // register
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Don't have an account?"),
+                    // handle the logics of the push
                     TextButton(
                       onPressed: () {
                         Navigator.push(
