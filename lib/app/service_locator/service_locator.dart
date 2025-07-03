@@ -27,12 +27,7 @@ Future<void> initDependencies() async {
   await _initSplashModule();
 
 
-  //  await _initHiveService();
-  // await _initApiService();
-  // await _initSharedPrefs();
-  // await _initAuthModule();
-  // await _initHomeModule();
-  // await _initSplashModule();
+
 }
 
 Future<void> _initApiService() async {

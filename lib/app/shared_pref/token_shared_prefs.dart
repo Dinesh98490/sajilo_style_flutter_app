@@ -2,6 +2,8 @@ import 'package:dartz/dartz.dart';
 import 'package:sajilo_style/core/error/failure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+// token shared pref
 class TokenSharedPrefs {
   final SharedPreferences _sharedPreferences;
 
