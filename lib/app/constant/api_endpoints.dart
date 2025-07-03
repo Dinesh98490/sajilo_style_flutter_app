@@ -1,7 +1,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-    // Timeouts
+    // time
   static const connectionTimeout = Duration(seconds: 1000);
   static const receiveTimeout = Duration(seconds: 1000);
 
@@ -13,7 +13,7 @@ class ApiEndpoints {
     // For iPhone (uncomment if needed)
   static const String baseUrl = "$serverAddress/api/auth";
 
-    // Auth
+    // authentications
   static const String login = "/login";
   static const String register = "/register";
 
