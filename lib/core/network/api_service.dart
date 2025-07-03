@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:sajilo_style/app/constant/api_endpoints.dart';
 import 'package:sajilo_style/core/network/dio_error_intercepter.dart';
 
+
+// connetcyions of the api service
 class ApiService {
   final Dio _dio;
 
