@@ -4,6 +4,8 @@ import 'package:sajilo_style/features/auth/domain/entity/user_entity.dart';
 
 part 'user_api_model.g.dart';
 
+
+// user api model 
 @JsonSerializable()
 class UserApiModel  extends Equatable {
   @JsonKey(name: '_id')
@@ -46,7 +48,7 @@ class UserApiModel  extends Equatable {
 
 
 
-  // From Entity
+  // From entity
   factory UserApiModel.fromEntity(UserEntity entity) {
     final user = UserApiModel(
       fullName: entity.fullName,
