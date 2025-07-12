@@ -35,6 +35,8 @@ void main() {
     );
   }
 
+
+  // check the code of the widget test
   group('LoginView Widget Tests', () {
     testWidgets('should display all UI elements correctly', (WidgetTester tester) async {
       // Act
