@@ -96,6 +96,8 @@ void main() {
       verifyNever(() => mockTokenSharedPrefs.saveToken(any()));
     });
 
+
+    // check the data base error
     test('should handle local database failure from repository', () async {
       // Arrange
       const localFailure = LocalDatabaseFailure(message: 'Database connection failed');
