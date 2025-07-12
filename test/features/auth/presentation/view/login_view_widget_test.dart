@@ -110,6 +110,7 @@ void main() {
       expect(updatedCheckbox.value, true);
     });
 
+  // should call login event when form is valid and login button is pressed
     testWidgets('should call login event when form is valid and login button is pressed', (WidgetTester tester) async {
       // Arrange
       when(() => mockLoginViewModel.add(any())).thenReturn(null);
