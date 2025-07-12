@@ -70,17 +70,20 @@ class LoginViewModel extends Bloc<LoginEvent, LoginState> {
       (failure) {
         // Handle failure case
         emit(state.copyWith(isLoading: false, isSuccess: false));
-
-        showMySnackBar(
-          context: event.context,
-          message: 'Invalid credentials. Please try again.',
-          color: Colors.red,
-        );
+        if (event.context != null) {
+          showMySnackBar(
+            context: event.context!,
+            message: 'Invalid credentials. Please try again.',
+            color: Colors.red,
+          );
+        }
       },
       (token) {
         // Handle success case
         emit(state.copyWith(isLoading: false, isSuccess: true));
-        add(NavigateToHomeViewEvent(context: event.context));
+        if (event.context != null) {
+          add(NavigateToHomeViewEvent(context: event.context!));
+        }
       },
     );
   }

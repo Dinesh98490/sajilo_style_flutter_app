@@ -16,12 +16,12 @@ class NavigateToHomeViewEvent extends LoginEvent {
 }
 
 class LoginWithEmailAndPasswordEvent extends LoginEvent {
-  final BuildContext context;
+  final BuildContext? context;
   final String email;
   final String password;
 
   LoginWithEmailAndPasswordEvent({
-    required this.context,
+    this.context,
     required this.email,
     required this.password,
   });
