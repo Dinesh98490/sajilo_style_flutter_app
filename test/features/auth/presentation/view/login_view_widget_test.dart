@@ -167,6 +167,8 @@ void main() {
       verify(() => mockLoginViewModel.add(any())).called(1);
     });
 
+
+    // check the email field is valid
     testWidgets('should validate email field is required', (WidgetTester tester) async {
       // Act
       await tester.pumpWidget(createWidgetUnderTest());
