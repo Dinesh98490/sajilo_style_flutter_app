@@ -111,6 +111,8 @@ void main() {
       verifyNever(() => mockTokenSharedPrefs.saveToken(any()));
     });
 
+
+      // should handle different email and password
     test('should handle different email and password combinations', () async {
       // Arrange
       const differentParams = LoginParams(email: 'user@test.com', password: 'different123');
