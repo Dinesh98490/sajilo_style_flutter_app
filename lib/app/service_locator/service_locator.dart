@@ -12,7 +12,10 @@ import 'package:sajilo_style/features/auth/domain/use_case/user_login_usecase.da
 import 'package:sajilo_style/features/auth/domain/use_case/user_register_usercase.dart';
 import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 import 'package:sajilo_style/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
-import 'package:sajilo_style/features/home/presentation/view_model/home_view_model.dart';
+import 'package:sajilo_style/features/home/data/data_source/remote_datasource/product_remote_datasource.dart';
+import 'package:sajilo_style/features/home/data/repository/remote_repository/product_remote_repository.dart';
+import 'package:sajilo_style/features/home/domain/use_case/product_get_current_usecase.dart';
+import 'package:sajilo_style/features/home/presentation/product_view_model/home_view_model.dart';
 import 'package:sajilo_style/features/splash/presentation/view_model/splash_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -114,6 +117,15 @@ Future<void> _initSharedPrefs() async {
 
 
 Future<void> _initHomeModule() async {
+  serviceLocator.registerFactory(
+    () => ProductRemoteDatasource(apiService: serviceLocator<ApiService>()),
+  );
+  serviceLocator.registerFactory(
+    () => ProductRemoteRepository(productRemoteDatasource: serviceLocator<ProductRemoteDatasource>()),
+  );
+  serviceLocator.registerFactory(
+    () => ProductGetCurrentUsecase(productRepository: serviceLocator<ProductRemoteRepository>()),
+  );
   serviceLocator.registerFactory(
     () => HomeViewModel(loginViewModel: serviceLocator<LoginViewModel>()),
   );
