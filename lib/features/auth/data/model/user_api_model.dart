@@ -46,8 +46,6 @@ class UserApiModel  extends Equatable {
     );
   }
 
-
-
   // From entity
   factory UserApiModel.fromEntity(UserEntity entity) {
     final user = UserApiModel(
