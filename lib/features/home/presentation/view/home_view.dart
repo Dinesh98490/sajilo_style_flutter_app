@@ -1,4 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sajilo_style/app/constant/api_endpoints.dart';
+import '../../domain/entity/product_entity.dart';
+import '../product_view_model/product_bloc.dart';
+import '../product_view_model/product_state.dart';
+import '../product_view_model/product_event.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -24,7 +31,7 @@ class _HomeState extends State<HomeView> {
     });
   }
 
-// small chanegs on the design 
+  // small chanegs on the design
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +76,7 @@ class _HomeState extends State<HomeView> {
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-  final String userName = 'Dinesh'; 
+  final String userName = 'Dinesh';
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +180,12 @@ class HomePage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 227, 224, 224), //color of the main sections of the dashbboard
+                    color: Color.fromARGB(
+                      255,
+                      227,
+                      224,
+                      224,
+                    ), //color of the main sections of the dashbboard
                   ),
                 ),
                 SizedBox(height: 10),
@@ -195,48 +207,41 @@ class HomePage extends StatelessWidget {
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-
-          // Offer Grid
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 20,
-            crossAxisSpacing: 20,
-            children: const [
-              OfferCard(
-                label: 'Min 30% Off',
-                icon: Icons.local_offer,
-                color: Colors.teal,
-                imagePath: 'assets/images/air_max.png',
-              ),
-              OfferCard(
-                label: 'Buy 1 Get 1',
-                icon: Icons.shopping_bag,
-                color: Colors.indigo,
-                imagePath: 'assets/images/air_force_1.png',
-              ),
-              OfferCard(
-                label: 'Flat 50%',
-                icon: Icons.discount,
-                color: Color.fromARGB(255, 70, 56, 51),
-                imagePath: 'assets/images/black_shoes.png',
-              ),
-              OfferCard(
-                label: 'New Arrivals',
-                icon: Icons.new_releases,
-                color: Colors.green,
-                imagePath: 'assets/images/black_shoes.png',
-              ),
-            ],
+          BlocBuilder<ProductBloc, ProductState>(
+            builder: (context, state) {
+              if (state is ProductLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is ProductLoaded) {
+                final products = state.products;
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: products.length,
+                  separatorBuilder:
+                      (context, index) => const SizedBox(height: 16),
+                  itemBuilder: (context, index) {
+                    return ProductCard(product: products[index]);
+                  },
+                );
+              } else if (state is ProductError) {
+                return Center(
+                  child: Text(
+                    state.message,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
+              } else {
+                // Initial state: trigger loading
+                context.read<ProductBloc>().add(const LoadProducts());
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
           ),
         ],
       ),
     );
   }
 }
-
-
 
 class CategoryImageCard extends StatelessWidget {
   final String title;
@@ -332,6 +337,111 @@ class OfferCard extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProductCard extends StatelessWidget {
+  final ProductEntity product;
+  const ProductCard({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    print("http://10.0.2.2:5050/${product.image}");
+    return Card(
+      elevation: 6,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {},
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  "http://10.0.2.2:5050/${product.image}",
+                  width: 100, // set your desired width
+                  height: 100, // set your desired height
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      product.category.title,
+                      style: const TextStyle(
+                        color: Colors.orange,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Rs. ${product.price.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        color: Colors.deepOrange,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      product.desc,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        ),
+                        onPressed: () {
+                          // Add to cart or details action
+                        },
+                        child: const Text(
+                          'Add to Cart',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
