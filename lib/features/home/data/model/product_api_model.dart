@@ -18,7 +18,7 @@ class ProductApiModel extends Equatable {
   final int quantity;
 
   @JsonKey(name: 'categoryId')
-  final CategoryApiModel category;
+  final CategoryApiModel? category;
 
   const ProductApiModel({
     this.id,
@@ -32,8 +32,36 @@ class ProductApiModel extends Equatable {
     required this.category,
   });
 
-  factory ProductApiModel.fromJson(Map<String, dynamic> json) =>
-      _$ProductApiModelFromJson(json);
+  factory ProductApiModel.fromJson(dynamic json) {
+    if (json is Map<String, dynamic>) {
+      return ProductApiModel(
+        id: json['_id'] as String?,
+        title: json['title'] as String? ?? '',
+        desc: json['desc'] as String? ?? '',
+        price: (json['price'] as num?)?.toDouble() ?? 0,
+        image: json['image'] as String? ?? '',
+        color: json['color'] as String? ?? '',
+        size: json['size'] as String? ?? '',
+        quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+        category: (json['categoryId'] is Map<String, dynamic>)
+            ? CategoryApiModel.fromJson(json['categoryId'] as Map<String, dynamic>)
+            : null,
+      );
+    } else {
+      print('ProductApiModel.fromJson: expected Map, got ${json.runtimeType}');
+      return ProductApiModel(
+        id: '',
+        title: '',
+        desc: '',
+        price: 0,
+        image: '',
+        color: '',
+        size: '',
+        quantity: 0,
+        category: null,
+      );
+    }
+  }
 
   Map<String, dynamic> toJson() => _$ProductApiModelToJson(this);
 
@@ -48,7 +76,7 @@ class ProductApiModel extends Equatable {
       color: color,
       size: size,
       quantity: quantity,
-      category: category.toEntity(),
+      category: category?.toEntity() ?? const CategoryEntity(id: '', title: '', desc: ''),
     );
   }
 

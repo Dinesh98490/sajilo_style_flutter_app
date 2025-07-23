@@ -53,6 +53,9 @@ dependencies:
   json_serializable: ^6.9.0
   bloc: ^9.0.0
   cached_network_image: 
+  sensors_plus: ^6.1.1
+  proximity_sensor: 
+ 
   
 
 

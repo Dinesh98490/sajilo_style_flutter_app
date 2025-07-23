@@ -2,10 +2,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sajilo_style/app/constant/api_endpoints.dart';
+import 'package:sajilo_style/features/auth/presentation/view/login_view.dart';
+import 'package:sajilo_style/features/profile/presentation/view/profile_view.dart';
 import '../../domain/entity/product_entity.dart';
 import '../product_view_model/product_bloc.dart';
 import '../product_view_model/product_state.dart';
 import '../product_view_model/product_event.dart';
+import 'package:sajilo_style/features/home/presentation/view/product_detail_view.dart';
+import 'package:sajilo_style/features/home/presentation/product_view_model/cart_bloc.dart';
+import 'package:sajilo_style/features/home/presentation/view/cart_view.dart';
+import 'package:sajilo_style/app/service_locator/service_locator.dart';
+import 'package:sajilo_style/features/home/presentation/view/order_view.dart';
+import 'package:sajilo_style/features/home/presentation/product_view_model/payment_order_bloc.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'dart:async';
+import 'dart:math';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -16,13 +27,73 @@ class HomeView extends StatefulWidget {
 
 class _HomeState extends State<HomeView> {
   int _selectedIndex = 0;
+  StreamSubscription? _accelerometerSubscription;
+  double _shakeThreshold = 15.0; // Lowered threshold for easier shake detection
+  DateTime? _lastShakeTime;
+  bool _isLogoutDialogOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _accelerometerSubscription = accelerometerEvents.listen(_onAccelerometerEvent);
+  }
+
+  void _onAccelerometerEvent(AccelerometerEvent event) {
+    final now = DateTime.now();
+    final double acceleration = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
+    print('Acceleration: $acceleration'); // Debug print
+    if (acceleration > _shakeThreshold) {
+      print('Shake detected!'); // Debug print
+      if (_lastShakeTime == null || now.difference(_lastShakeTime!) > const Duration(seconds: 2)) {
+        _lastShakeTime = now;
+        if (!mounted) return;
+        _showLogoutDialog();
+      }
+    }
+  }
+
+  void _showLogoutDialog() {
+    if (_isLogoutDialogOpen) return;
+    _isLogoutDialogOpen = true;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Do you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              _isLogoutDialogOpen = false;
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              _isLogoutDialogOpen = false;
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginView()));
+            },
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    ).then((_) {
+      _isLogoutDialogOpen = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _accelerometerSubscription?.cancel();
+    super.dispose();
+  }
 
   static const List<Widget> _pages = <Widget>[
     HomePage(),
     // Center(child: Text('Search Page')),
-    Center(child: Text('Favourite Page')),
-    Center(child: Text('Wishlist Page')),
-    Center(child: Text('Profile Page')),
+    OrderView(),
+    CartView(),
+    Center(child: ProfileView()),
   ];
 
   void _onItemTapped(int index) {
@@ -35,40 +106,37 @@ class _HomeState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.orange,
-        elevation: 1,
-        title: const Text(
-          'Dashboard',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CartBloc>(
+          create: (_) => serviceLocator<CartBloc>(),
         ),
-      ),
-
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.white,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          // BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favourite',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_card),
-            label: 'Wishlist',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
+        BlocProvider<PaymentOrderBloc>(
+          create: (_) => serviceLocator<PaymentOrderBloc>(),
+        ),
+      ],
+      child: Scaffold(
+        body: _pages[_selectedIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.white,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            // BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_bag),
+              label: 'Orders',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add_shopping_cart),
+              label: ' Cart',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          ],
+        ),
       ),
     );
   }
@@ -220,7 +288,25 @@ class HomePage extends StatelessWidget {
                   separatorBuilder:
                       (context, index) => const SizedBox(height: 16),
                   itemBuilder: (context, index) {
-                    return ProductCard(product: products[index]);
+                    return ProductCard(
+                      product: products[index],
+                      onTap: () {
+                        final cartBloc = BlocProvider.of<CartBloc>(context);
+                        final paymentOrderBloc = BlocProvider.of<PaymentOrderBloc>(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MultiBlocProvider(
+                              providers: [
+                                BlocProvider.value(value: cartBloc),
+                                BlocProvider.value(value: paymentOrderBloc),
+                              ],
+                              child: ProductDetailView(product: products[index]),
+                            ),
+                          ),
+                        );
+                      },
+                    );
                   },
                 );
               } else if (state is ProductError) {
@@ -345,7 +431,8 @@ class OfferCard extends StatelessWidget {
 
 class ProductCard extends StatelessWidget {
   final ProductEntity product;
-  const ProductCard({super.key, required this.product});
+  final VoidCallback? onTap;
+  const ProductCard({super.key, required this.product, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -356,7 +443,7 @@ class ProductCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {},
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
@@ -364,11 +451,23 @@ class ProductCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  "http://10.0.2.2:5050/${product.image}",
-                  width: 100, // set your desired width
-                  height: 100, // set your desired height
+                child: CachedNetworkImage(
+                  imageUrl: "http://10.0.2.2:5050/${product.image}",
+                  width: 100,
+                  height: 100,
                   fit: BoxFit.cover,
+                  placeholder: (context, url) => Image.asset(
+                    'assets/images/category.png',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                  errorWidget: (context, url, error) => Image.asset(
+                    'assets/images/category.png',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(width: 16),

@@ -12,6 +12,7 @@ class ProductRemoteDatasource implements IProductDataSource {
 
   @override
   Future<List<ProductEntity>> getProducts() async {
+    
     try {
       final response = await _apiService.dio.get(ApiEndpoints.getProducts);
       print('Raw response data:');

@@ -16,8 +16,10 @@ ProductApiModel _$ProductApiModelFromJson(Map<String, dynamic> json) =>
       color: json['color'] as String,
       size: json['size'] as String,
       quantity: (json['quantity'] as num).toInt(),
-      category:
-          CategoryApiModel.fromJson(json['categoryId'] as Map<String, dynamic>),
+      category: json['categoryId'] == null
+          ? null
+          : CategoryApiModel.fromJson(
+              json['categoryId'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ProductApiModelToJson(ProductApiModel instance) =>

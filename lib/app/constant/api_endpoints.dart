@@ -17,6 +17,16 @@ class ApiEndpoints {
   static const String login = "/login";
   static const String register = "/register";
   static const String getProducts="$serverAddress/api/admin/product";
+  static const String getme="$baseUrl/me";
+  static const String addorgetcart="$serverAddress/api/customer/cart";
+  static const String getcart="$serverAddress/api/customer/cart";
+  static const String deletecart="$serverAddress/api/customer/cart";
+  static const String updatecart="$serverAddress/api/customer/cart";
+  static const String getorders="$serverAddress/api/admin/order";
+  static const String createPayment="$serverAddress/api/customer/payment";
+  static const String getPayment="$serverAddress/api/customer/payment";
+
+  // static const String getProducts="$serverAddress/api/admin/product";
 
 
 
