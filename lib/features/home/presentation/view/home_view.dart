@@ -9,14 +9,15 @@ import '../product_view_model/product_bloc.dart';
 import '../product_view_model/product_state.dart';
 import '../product_view_model/product_event.dart';
 import 'package:sajilo_style/features/home/presentation/view/product_detail_view.dart';
-import 'package:sajilo_style/features/home/presentation/product_view_model/cart_bloc.dart';
-import 'package:sajilo_style/features/home/presentation/view/cart_view.dart';
+import 'package:sajilo_style/features/cart/presentation/cart_view_model/cart_bloc.dart';
+import 'package:sajilo_style/features/cart/presentation/view/cart_view.dart';
 import 'package:sajilo_style/app/service_locator/service_locator.dart';
-import 'package:sajilo_style/features/home/presentation/view/order_view.dart';
+import 'package:sajilo_style/features/order/presentation/view/order_view.dart';
 import 'package:sajilo_style/features/home/presentation/product_view_model/payment_order_bloc.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:async';
 import 'dart:math';
+import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -71,7 +72,15 @@ class _HomeState extends State<HomeView> {
           TextButton(
             onPressed: () {
               _isLogoutDialogOpen = false;
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginView()));
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider(
+                    create: (_) => serviceLocator<LoginViewModel>(),
+                    child: LoginView(),
+                  ),
+                ),
+              );
             },
             child: const Text('Logout'),
           ),
@@ -436,7 +445,7 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("http://10.0.2.2:5050/${product.image}");
+    print("${ApiEndpoints.serverAddress}/${product.image}");
     return Card(
       elevation: 6,
       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -452,7 +461,7 @@ class ProductCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: CachedNetworkImage(
-                  imageUrl: "http://10.0.2.2:5050/${product.image}",
+                  imageUrl: "${ApiEndpoints.serverAddress}/${product.image}",
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_paypal/flutter_paypal.dart';
+import 'package:sajilo_style/app/constant/api_endpoints.dart';
 import '../../domain/entity/product_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sajilo_style/features/home/presentation/product_view_model/cart_bloc.dart';
+import 'package:sajilo_style/features/cart/presentation/cart_view_model/cart_bloc.dart';
 import 'package:sajilo_style/app/service_locator/service_locator.dart';
 import 'package:sajilo_style/features/home/presentation/product_view_model/payment_order_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ProductDetailView extends StatelessWidget {
   final ProductEntity product;
@@ -14,9 +17,7 @@ class ProductDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<CartBloc>(
-          create: (_) => serviceLocator<CartBloc>(),
-        ),
+        BlocProvider<CartBloc>(create: (_) => serviceLocator<CartBloc>()),
         BlocProvider<PaymentOrderBloc>(
           create: (_) => serviceLocator<PaymentOrderBloc>(),
         ),
@@ -25,11 +26,19 @@ class ProductDetailView extends StatelessWidget {
         listener: (context, state) {
           if (state is PaymentOrderError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
             );
           } else if (state is PaymentOrderSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Order placed successfully!')),
+            Fluttertoast.showToast(
+              msg: "Order placed successfully!",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              backgroundColor: Colors.blue,
+              textColor: Colors.white,
+              fontSize: 16.0,
             );
           }
         },
@@ -37,11 +46,19 @@ class ProductDetailView extends StatelessWidget {
           listener: (context, state) {
             if (state is CartError) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
               );
             } else if (state is CartLoaded) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Added to cart!')),
+              Fluttertoast.showToast(
+                msg: "Added to cart!",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                backgroundColor: Colors.green,
+                textColor: Colors.white,
+                fontSize: 16.0,
               );
             }
           },
@@ -62,18 +79,27 @@ class ProductDetailView extends StatelessWidget {
                           child: Container(
                             color: Colors.orange.shade50,
                             child: CachedNetworkImage(
-                              imageUrl: "http://10.0.2.2:5050/${product.image}",
+                              imageUrl:
+                                  "${ApiEndpoints.serverAddress}/${product.image}",
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: 320,
-                              placeholder: (context, url) => Container(
-                                color: Colors.orange.shade50,
-                                child: const Center(child: CircularProgressIndicator()),
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                color: Colors.orange.shade50,
-                                child: const Icon(Icons.broken_image, size: 80, color: Colors.orange),
-                              ),
+                              placeholder:
+                                  (context, url) => Container(
+                                    color: Colors.orange.shade50,
+                                    child: const Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  ),
+                              errorWidget:
+                                  (context, url, error) => Container(
+                                    color: Colors.orange.shade50,
+                                    child: const Icon(
+                                      Icons.broken_image,
+                                      size: 80,
+                                      color: Colors.orange,
+                                    ),
+                                  ),
                             ),
                           ),
                         ),
@@ -81,7 +107,10 @@ class ProductDetailView extends StatelessWidget {
                     ),
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -99,7 +128,10 @@ class ProductDetailView extends StatelessWidget {
                                   ),
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 8,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange.shade50,
                                     borderRadius: BorderRadius.circular(12),
@@ -118,24 +150,45 @@ class ProductDetailView extends StatelessWidget {
                             const SizedBox(height: 10),
                             Row(
                               children: [
-                                Icon(Icons.category, color: Colors.orange.shade400, size: 20),
+                                Icon(
+                                  Icons.category,
+                                  color: Colors.orange.shade400,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 6),
                                 Text(
                                   product.category.title,
-                                  style: const TextStyle(fontSize: 15, color: Colors.orange, fontWeight: FontWeight.w600),
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                                 const SizedBox(width: 12),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.green.shade50,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Row(
                                     children: const [
-                                      Icon(Icons.local_shipping, color: Colors.green, size: 16),
+                                      Icon(
+                                        Icons.local_shipping,
+                                        color: Colors.green,
+                                        size: 16,
+                                      ),
                                       SizedBox(width: 4),
-                                      Text('Free Delivery', style: TextStyle(color: Colors.green, fontWeight: FontWeight.w600)),
+                                      Text(
+                                        'Free Delivery',
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -148,7 +201,10 @@ class ProductDetailView extends StatelessWidget {
                                 const SizedBox(width: 10),
                                 _InfoChip(label: 'Size', value: product.size),
                                 const SizedBox(width: 10),
-                                _InfoChip(label: 'Qty', value: product.quantity.toString()),
+                                _InfoChip(
+                                  label: 'Qty',
+                                  value: product.quantity.toString(),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 18),
@@ -156,11 +212,23 @@ class ProductDetailView extends StatelessWidget {
                               children: [
                                 _StarRating(rating: 4.5),
                                 const SizedBox(width: 8),
-                                const Text('4.5 (234 reviews)', style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black54)),
+                                const Text(
+                                  '4.5 (234 reviews)',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black54,
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 28),
-                            const Text('Description', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                            const Text(
+                              'Description',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             Container(
                               width: double.infinity,
@@ -178,39 +246,60 @@ class ProductDetailView extends StatelessWidget {
                               ),
                               child: Text(
                                 product.desc,
-                                style: const TextStyle(fontSize: 15, color: Colors.black87, height: 1.5),
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black87,
+                                  height: 1.5,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 32),
                             const Divider(height: 32, thickness: 1),
-                            const Text('Customer Reviews', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                            const Text(
+                              'Customer Reviews',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
                             const SizedBox(height: 12),
                             _ReviewTile(
                               name: 'Aayush Sharma',
                               rating: 5,
-                              review: 'Great quality! Fast delivery and the product is exactly as described.',
+                              review:
+                                  'Great quality! Fast delivery and the product is exactly as described.',
                             ),
                             _ReviewTile(
                               name: 'Sneha Karki',
                               rating: 4,
-                              review: 'Very comfortable and stylish. Will buy again!',
+                              review:
+                                  'Very comfortable and stylish. Will buy again!',
                             ),
                             _ReviewTile(
                               name: 'Ramesh Thapa',
                               rating: 5,
-                              review: 'Excellent value for money. Highly recommended.',
+                              review:
+                                  'Excellent value for money. Highly recommended.',
                             ),
                             const SizedBox(height: 32),
                             const Divider(height: 32, thickness: 1),
-                            const Text('You may also like', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                            const Text(
+                              'You may also like',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
                             const SizedBox(height: 12),
                             SizedBox(
                               height: 140,
                               child: ListView.separated(
                                 scrollDirection: Axis.horizontal,
                                 itemCount: 3,
-                                separatorBuilder: (context, i) => const SizedBox(width: 16),
-                                itemBuilder: (context, i) => _DummyProductCard(),
+                                separatorBuilder:
+                                    (context, i) => const SizedBox(width: 16),
+                                itemBuilder:
+                                    (context, i) => _DummyProductCard(),
                               ),
                             ),
                             const SizedBox(height: 100), // For button space
@@ -225,7 +314,10 @@ class ProductDetailView extends StatelessWidget {
                   right: 0,
                   bottom: 0,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       boxShadow: [
@@ -244,14 +336,26 @@ class ProductDetailView extends StatelessWidget {
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.orange,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                                 elevation: 2,
                               ),
                               onPressed: () {
-                                context.read<CartBloc>().add(AddToCartEvent(product));
+                                context.read<CartBloc>().add(
+                                  AddToCartEvent(product),
+                                );
                               },
-                              child: const Text('Add to Cart', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              child: const Text(
+                                'Add to Cart',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -259,15 +363,67 @@ class ProductDetailView extends StatelessWidget {
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                                 elevation: 2,
                               ),
                               onPressed: () {
-                                // Dummy values for userId, address, paymentMethod
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder:
+                                        (BuildContext context) => UsePaypal(
+                                          sandboxMode: true,
+                                          clientId:
+                                              "AcnpbvL-nqay69eboBK-a2hcQLnkFTQZXbTF0f4UafVwhRYAXe11Z0B3PtFyWCTDH24INY6Cu2U0rhRC",
+                                          secretKey:
+                                              "EGZXWncK71BKAfqH7ClPpldekK6kSKvO9yIk0Loz36CkdM7uLC_vuE5mjbGjRhJhBT5BeOYyBB-_p6WW",
+                                          returnURL:
+                                              "https://samplesite.com/return",
+                                          cancelURL:
+                                              "https://samplesite.com/cancel",
+                                          transactions: [
+                                            {
+                                              "amount": {
+                                                "total":
+                                                    product.price.toString(),
+                                                "currency": "USD",
+                                                "details": {
+                                                  "subtotal":
+                                                      product.price.toString(),
+                                                  "shipping": '0',
+                                                  "shipping_discount": 0,
+                                                },
+                                              },
+                                              "description":
+                                                  "Payment for course: ${product.title}",
+                                              "item_list": {
+                                                "items": [
+                                                  {
+                                                    "name": product.title,
+                                                    "quantity": 1,
+                                                    "price":
+                                                        product.price
+                                                            .toString(),
+                                                    "currency": "USD",
+                                                  },
+                                                ],
+                                              },
+                                            },
+                                          ],
+                                          note:
+                                              "Contact us for any questions on your order.",
+                                          onSuccess: (Map params) async {},
+                                          onError: (error) {},
+                                          onCancel: (params) {},
+                                        ),
+                                  ),
+                                );
                                 context.read<PaymentOrderBloc>().add(
                                   CreatePaymentAndOrderEvent(
-                                  
                                     paymentMethod: 'COD',
                                     price: product.price,
                                     address: 'Kathmandu, Nepal',
@@ -276,7 +432,14 @@ class ProductDetailView extends StatelessWidget {
                                   ),
                                 );
                               },
-                              child: const Text('Buy Now', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                              child: const Text(
+                                'Buy Now',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -319,8 +482,20 @@ class _InfoChip extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.orange)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.black87)),
+          Text(
+            '$label: ',
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.orange,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+          ),
         ],
       ),
     );
@@ -342,8 +517,8 @@ class _StarRating extends StatelessWidget {
           isFull
               ? Icons.star
               : isHalf
-                  ? Icons.star_half
-                  : Icons.star_border,
+              ? Icons.star_half
+              : Icons.star_border,
           color: Colors.amber,
           size: 20,
         );
@@ -356,7 +531,11 @@ class _ReviewTile extends StatelessWidget {
   final String name;
   final int rating;
   final String review;
-  const _ReviewTile({required this.name, required this.rating, required this.review});
+  const _ReviewTile({
+    required this.name,
+    required this.rating,
+    required this.review,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -367,7 +546,10 @@ class _ReviewTile extends StatelessWidget {
         children: [
           CircleAvatar(
             backgroundColor: Colors.orange.shade200,
-            child: Text(name.isNotEmpty ? name[0] : '', style: const TextStyle(color: Colors.white)),
+            child: Text(
+              name.isNotEmpty ? name[0] : '',
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -376,7 +558,10 @@ class _ReviewTile extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      name,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(width: 8),
                     _StarRating(rating: rating.toDouble()),
                   ],
@@ -425,9 +610,19 @@ class _DummyProductCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                Text('Sneaker X', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                Text(
+                  'Sneaker X',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                ),
                 SizedBox(height: 2),
-                Text('Rs. 2999', style: TextStyle(color: Colors.deepOrange, fontWeight: FontWeight.w600, fontSize: 12)),
+                Text(
+                  'Rs. 2999',
+                  style: TextStyle(
+                    color: Colors.deepOrange,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
               ],
             ),
           ),
@@ -435,4 +630,4 @@ class _DummyProductCard extends StatelessWidget {
       ),
     );
   }
-} 
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sajilo_style/app/service_locator/service_locator.dart';
 import 'package:sajilo_style/features/auth/presentation/view/login_view.dart';
 import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 import 'home_state.dart';

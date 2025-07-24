@@ -18,19 +18,19 @@ import 'package:sajilo_style/features/home/domain/use_case/product_get_current_u
 import 'package:sajilo_style/features/home/presentation/product_view_model/home_view_model.dart';
 import 'package:sajilo_style/features/splash/presentation/view_model/splash_view_model.dart';
 import 'package:sajilo_style/features/profile/presentation/profile_view_model/profile_bloc.dart';
-import 'package:sajilo_style/features/home/data/data_source/remote_datasource/cart_remote_datasource.dart';
-import 'package:sajilo_style/features/home/data/repository/cart_repository.dart';
-import 'package:sajilo_style/features/home/domain/use_case/cart_usecases.dart';
-import 'package:sajilo_style/features/home/presentation/product_view_model/cart_bloc.dart';
+import 'package:sajilo_style/features/cart/data/data_source/remote_datasource/cart_remote_datasource.dart';
+import 'package:sajilo_style/features/cart/data/repository/cart_repository.dart';
+import 'package:sajilo_style/features/cart/domain/use_case/cart_usecases.dart';
+import 'package:sajilo_style/features/cart/presentation/cart_view_model/cart_bloc.dart';
 import 'package:sajilo_style/features/home/data/data_source/remote_datasource/payment_order_remote_datasource.dart';
 import 'package:sajilo_style/features/home/data/repository/payment_order_repository.dart';
 import 'package:sajilo_style/features/home/domain/use_case/payment_order_usecase.dart';
 import 'package:sajilo_style/features/home/presentation/product_view_model/payment_order_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sajilo_style/features/home/data/data_source/remote_datasource/order_remote_datasource.dart';
-import 'package:sajilo_style/features/home/data/repository/order_repository.dart';
-import 'package:sajilo_style/features/home/domain/use_case/get_orders_usecase.dart';
-import 'package:sajilo_style/features/home/presentation/product_view_model/order_bloc.dart';
+import 'package:sajilo_style/features/order/data/data_source/remote_datasource/order_remote_datasource.dart';
+import 'package:sajilo_style/features/order/data/repository/order_repository.dart';
+import 'package:sajilo_style/features/order/domain/use_case/get_orders_usecase.dart';
+import 'package:sajilo_style/features/order/presentation/view_model/order_bloc.dart';
 
 final serviceLocator = GetIt.instance;
 

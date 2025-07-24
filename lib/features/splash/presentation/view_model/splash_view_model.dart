@@ -42,8 +42,8 @@ class SplashViewModel extends Cubit<void> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => BlocProvider.value(
-                value: serviceLocator<LoginViewModel>(),
+              builder: (context) => BlocProvider(
+                create: (_) => serviceLocator<LoginViewModel>(),
                 child: LoginView(),
               ),
             ),

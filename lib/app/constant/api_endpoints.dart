@@ -8,6 +8,7 @@ class ApiEndpoints {
 
   // For iOS Simulator
   // static const String serverAddress = "http://localhost:5050";
+  // static const String serverAddress = "http://172.26.20.248:5050";
   static const String serverAddress = "http://10.0.2.2:5050";
 
     // For iPhone (uncomment if needed)

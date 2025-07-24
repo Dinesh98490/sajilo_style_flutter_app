@@ -107,8 +107,8 @@ class ProfileView extends StatelessWidget {
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => BlocProvider.value(
-                                    value: serviceLocator<LoginViewModel>(),
+                                  builder: (context) => BlocProvider(
+                                    create: (_) => serviceLocator<LoginViewModel>(),
                                     child: LoginView(),
                                   ),
                                 ),
