@@ -1,4 +1,23 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sajilo_style/app/constant/api_endpoints.dart';
+import 'package:sajilo_style/features/auth/presentation/view/login_view.dart';
+import 'package:sajilo_style/features/profile/presentation/view/profile_view.dart';
+import '../../domain/entity/product_entity.dart';
+import '../product_view_model/product_bloc.dart';
+import '../product_view_model/product_state.dart';
+import '../product_view_model/product_event.dart';
+import 'package:sajilo_style/features/home/presentation/view/product_detail_view.dart';
+import 'package:sajilo_style/features/cart/presentation/cart_view_model/cart_bloc.dart';
+import 'package:sajilo_style/features/cart/presentation/view/cart_view.dart';
+import 'package:sajilo_style/app/service_locator/service_locator.dart';
+import 'package:sajilo_style/features/order/presentation/view/order_view.dart';
+import 'package:sajilo_style/features/home/presentation/product_view_model/payment_order_bloc.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'dart:async';
+import 'dart:math';
+import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -9,13 +28,81 @@ class HomeView extends StatefulWidget {
 
 class _HomeState extends State<HomeView> {
   int _selectedIndex = 0;
+  StreamSubscription? _accelerometerSubscription;
+  double _shakeThreshold = 15.0; // Lowered threshold for easier shake detection
+  DateTime? _lastShakeTime;
+  bool _isLogoutDialogOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _accelerometerSubscription = accelerometerEvents.listen(_onAccelerometerEvent);
+  }
+
+  void _onAccelerometerEvent(AccelerometerEvent event) {
+    final now = DateTime.now();
+    final double acceleration = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
+    print('Acceleration: $acceleration'); // Debug print
+    if (acceleration > _shakeThreshold) {
+      print('Shake detected!'); // Debug print
+      if (_lastShakeTime == null || now.difference(_lastShakeTime!) > const Duration(seconds: 2)) {
+        _lastShakeTime = now;
+        if (!mounted) return;
+        _showLogoutDialog();
+      }
+    }
+  }
+
+  void _showLogoutDialog() {
+    if (_isLogoutDialogOpen) return;
+    _isLogoutDialogOpen = true;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Do you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              _isLogoutDialogOpen = false;
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              _isLogoutDialogOpen = false;
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider(
+                    create: (_) => serviceLocator<LoginViewModel>(),
+                    child: LoginView(),
+                  ),
+                ),
+              );
+            },
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    ).then((_) {
+      _isLogoutDialogOpen = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _accelerometerSubscription?.cancel();
+    super.dispose();
+  }
 
   static const List<Widget> _pages = <Widget>[
     HomePage(),
     // Center(child: Text('Search Page')),
-    Center(child: Text('Favourite Page')),
-    Center(child: Text('Wishlist Page')),
-    Center(child: Text('Profile Page')),
+    OrderView(),
+    CartView(),
+    Center(child: ProfileView()),
   ];
 
   void _onItemTapped(int index) {
@@ -24,44 +111,41 @@ class _HomeState extends State<HomeView> {
     });
   }
 
-// small chanegs on the design 
+  // small chanegs on the design
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.orange,
-        elevation: 1,
-        title: const Text(
-          'Dashboard',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CartBloc>(
+          create: (_) => serviceLocator<CartBloc>(),
         ),
-      ),
-
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.white,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          // BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favourite',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_card),
-            label: 'Wishlist',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
+        BlocProvider<PaymentOrderBloc>(
+          create: (_) => serviceLocator<PaymentOrderBloc>(),
+        ),
+      ],
+      child: Scaffold(
+        body: _pages[_selectedIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.white,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            // BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_bag),
+              label: 'Orders',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add_shopping_cart),
+              label: ' Cart',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          ],
+        ),
       ),
     );
   }
@@ -69,7 +153,7 @@ class _HomeState extends State<HomeView> {
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-  final String userName = 'Dinesh'; 
+  final String userName = 'Dinesh';
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +257,12 @@ class HomePage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 227, 224, 224), //color of the main sections of the dashbboard
+                    color: Color.fromARGB(
+                      255,
+                      227,
+                      224,
+                      224,
+                    ), //color of the main sections of the dashbboard
                   ),
                 ),
                 SizedBox(height: 10),
@@ -195,48 +284,59 @@ class HomePage extends StatelessWidget {
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-
-          // Offer Grid
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 20,
-            crossAxisSpacing: 20,
-            children: const [
-              OfferCard(
-                label: 'Min 30% Off',
-                icon: Icons.local_offer,
-                color: Colors.teal,
-                imagePath: 'assets/images/air_max.png',
-              ),
-              OfferCard(
-                label: 'Buy 1 Get 1',
-                icon: Icons.shopping_bag,
-                color: Colors.indigo,
-                imagePath: 'assets/images/air_force_1.png',
-              ),
-              OfferCard(
-                label: 'Flat 50%',
-                icon: Icons.discount,
-                color: Color.fromARGB(255, 70, 56, 51),
-                imagePath: 'assets/images/black_shoes.png',
-              ),
-              OfferCard(
-                label: 'New Arrivals',
-                icon: Icons.new_releases,
-                color: Colors.green,
-                imagePath: 'assets/images/black_shoes.png',
-              ),
-            ],
+          BlocBuilder<ProductBloc, ProductState>(
+            builder: (context, state) {
+              if (state is ProductLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is ProductLoaded) {
+                final products = state.products;
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: products.length,
+                  separatorBuilder:
+                      (context, index) => const SizedBox(height: 16),
+                  itemBuilder: (context, index) {
+                    return ProductCard(
+                      product: products[index],
+                      onTap: () {
+                        final cartBloc = BlocProvider.of<CartBloc>(context);
+                        final paymentOrderBloc = BlocProvider.of<PaymentOrderBloc>(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MultiBlocProvider(
+                              providers: [
+                                BlocProvider.value(value: cartBloc),
+                                BlocProvider.value(value: paymentOrderBloc),
+                              ],
+                              child: ProductDetailView(product: products[index]),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              } else if (state is ProductError) {
+                return Center(
+                  child: Text(
+                    state.message,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
+              } else {
+                // Initial state: trigger loading
+                context.read<ProductBloc>().add(const LoadProducts());
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
           ),
         ],
       ),
     );
   }
 }
-
-
 
 class CategoryImageCard extends StatelessWidget {
   final String title;
@@ -332,6 +432,124 @@ class OfferCard extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProductCard extends StatelessWidget {
+  final ProductEntity product;
+  final VoidCallback? onTap;
+  const ProductCard({super.key, required this.product, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    print("${ApiEndpoints.serverAddress}/${product.image}");
+    return Card(
+      elevation: 6,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: CachedNetworkImage(
+                  imageUrl: "${ApiEndpoints.serverAddress}/${product.image}",
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Image.asset(
+                    'assets/images/category.png',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                  errorWidget: (context, url, error) => Image.asset(
+                    'assets/images/category.png',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      product.category.title,
+                      style: const TextStyle(
+                        color: Colors.orange,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Rs. ${product.price.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        color: Colors.deepOrange,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      product.desc,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        ),
+                        onPressed: () {
+                          // Add to cart or details action
+                        },
+                        child: const Text(
+                          'Add to Cart',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

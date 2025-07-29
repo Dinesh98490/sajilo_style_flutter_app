@@ -12,9 +12,27 @@ import 'package:sajilo_style/features/auth/domain/use_case/user_login_usecase.da
 import 'package:sajilo_style/features/auth/domain/use_case/user_register_usercase.dart';
 import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 import 'package:sajilo_style/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
-import 'package:sajilo_style/features/home/presentation/view_model/home_view_model.dart';
+import 'package:sajilo_style/features/home/data/data_source/remote_datasource/product_remote_datasource.dart';
+import 'package:sajilo_style/features/home/data/repository/remote_repository/product_remote_repository.dart';
+import 'package:sajilo_style/features/home/domain/use_case/product_get_current_usecase.dart';
+import 'package:sajilo_style/features/home/presentation/product_view_model/home_view_model.dart';
 import 'package:sajilo_style/features/splash/presentation/view_model/splash_view_model.dart';
+import 'package:sajilo_style/features/profile/presentation/profile_view_model/profile_bloc.dart';
+import 'package:sajilo_style/features/cart/data/data_source/remote_datasource/cart_remote_datasource.dart';
+import 'package:sajilo_style/features/cart/data/repository/cart_repository.dart';
+import 'package:sajilo_style/features/cart/domain/use_case/cart_usecases.dart';
+import 'package:sajilo_style/features/cart/presentation/cart_view_model/cart_bloc.dart';
+import 'package:sajilo_style/features/home/data/data_source/remote_datasource/payment_order_remote_datasource.dart';
+import 'package:sajilo_style/features/home/data/repository/payment_order_repository.dart';
+import 'package:sajilo_style/features/home/domain/use_case/payment_order_usecase.dart';
+import 'package:sajilo_style/features/home/presentation/product_view_model/payment_order_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sajilo_style/features/order/data/data_source/remote_datasource/order_remote_datasource.dart';
+import 'package:sajilo_style/features/order/data/repository/order_repository.dart';
+import 'package:sajilo_style/features/order/domain/use_case/get_orders_usecase.dart';
+import 'package:sajilo_style/features/order/presentation/view_model/order_bloc.dart';
+import 'package:sajilo_style/features/auth/domain/use_case/user_update_profile_usecase.dart';
+import 'package:sajilo_style/features/auth/domain/use_case/user_change_password_usecase.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -25,9 +43,10 @@ Future<void> initDependencies() async {
   await _initAuthModule();
   await _initHomeModule();
   await _initSplashModule();
-
-
-
+  await _initProfileModule();
+  await _initCartModule();
+  await _initPaymentOrderModule();
+  await _initOrderModule();
 }
 
 Future<void> _initApiService() async {
@@ -59,7 +78,7 @@ Future<void> _initSharedPrefs() async {
   );
 
   serviceLocator.registerFactory(
-    () => UserRemoteDatasource(apiService: serviceLocator<ApiService>()),
+    () => UserRemoteDatasource(apiService: serviceLocator<ApiService>(), tokenSharedPrefs: serviceLocator<TokenSharedPrefs>()),
   );
 
 
@@ -93,6 +112,18 @@ Future<void> _initSharedPrefs() async {
     ),
   );
 
+  serviceLocator.registerFactory(
+    () => UserGetCurrentUsecase(userRepository: serviceLocator<UserRemoteRepository>()),
+  );
+
+  serviceLocator.registerFactory(
+    () => UserUpdateProfileUsecase(userRepository: serviceLocator<UserRemoteRepository>()),
+  );
+
+  serviceLocator.registerFactory(
+    () => UserChangePasswordUsecase(userRepository: serviceLocator<UserRemoteRepository>()),
+  );
+
     serviceLocator.registerFactory(
     () => RegisterViewModel(
      
@@ -115,6 +146,15 @@ Future<void> _initSharedPrefs() async {
 
 Future<void> _initHomeModule() async {
   serviceLocator.registerFactory(
+    () => ProductRemoteDatasource(apiService: serviceLocator<ApiService>()),
+  );
+  serviceLocator.registerFactory(
+    () => ProductRemoteRepository(productRemoteDatasource: serviceLocator<ProductRemoteDatasource>()),
+  );
+  serviceLocator.registerFactory(
+    () => ProductGetCurrentUsecase(productRepository: serviceLocator<ProductRemoteRepository>()),
+  );
+  serviceLocator.registerFactory(
     () => HomeViewModel(loginViewModel: serviceLocator<LoginViewModel>()),
   );
 }
@@ -127,9 +167,72 @@ Future<void> _initSplashModule()  async {
   serviceLocator.registerFactory(() => SplashViewModel());
 }
 
+Future<void> _initProfileModule() async {
+  serviceLocator.registerFactory(
+    () => ProfileBloc(
+      getCurrentUser: serviceLocator<UserGetCurrentUsecase>(),
+      updateProfile: serviceLocator<UserUpdateProfileUsecase>(),
+      changePassword: serviceLocator<UserChangePasswordUsecase>(),
+    ),
+  );
+}
 
+Future<void> _initCartModule() async {
+  serviceLocator.registerFactory(
+    () => CartRemoteDataSource(apiService: serviceLocator<ApiService>(), tokenSharedPrefs: serviceLocator<TokenSharedPrefs>()),
+  );
+  serviceLocator.registerFactory<ICartRepository>(
+    () => CartRepository(serviceLocator<CartRemoteDataSource>()),
+  );
+  serviceLocator.registerFactory(() => GetCartItemsUseCase(serviceLocator<ICartRepository>()));
+  serviceLocator.registerFactory(() => AddToCartUseCase(serviceLocator<ICartRepository>()));
+  serviceLocator.registerFactory(() => RemoveFromCartUseCase(serviceLocator<ICartRepository>()));
+  serviceLocator.registerFactory(() => UpdateCartQuantityUseCase(serviceLocator<ICartRepository>()));
+  serviceLocator.registerFactory(() => CartBloc(
+    getCartItems: serviceLocator<GetCartItemsUseCase>(),
+    addToCart: serviceLocator<AddToCartUseCase>(),
+    removeFromCart: serviceLocator<RemoveFromCartUseCase>(),
+    updateCartQuantity: serviceLocator<UpdateCartQuantityUseCase>(),
+  ));
+}
 
+Future<void> _initPaymentOrderModule() async {
+  serviceLocator.registerFactory(
+    () => PaymentOrderRemoteDataSource(
+      apiService: serviceLocator<ApiService>(),
+      tokenSharedPrefs: serviceLocator<TokenSharedPrefs>(),
+    ),
+  );
+  serviceLocator.registerFactory<IPaymentOrderRepository>(
+    () => PaymentOrderRepository(serviceLocator<PaymentOrderRemoteDataSource>()),
+  );
+  serviceLocator.registerFactory(
+    () => CreatePaymentAndOrderUseCase(serviceLocator<IPaymentOrderRepository>()),
+  );
+  serviceLocator.registerFactory(
+    () => PaymentOrderBloc(
+      createPaymentAndOrderUseCase: serviceLocator<CreatePaymentAndOrderUseCase>(),
+    ),
+  );
+}
 
+Future<void> _initOrderModule() async {
+  serviceLocator.registerFactory(
+    () => OrderRemoteDataSource(
+      apiService: serviceLocator<ApiService>(),
+      tokenSharedPrefs: serviceLocator<TokenSharedPrefs>(),
+    ),
+  );
+  serviceLocator.registerFactory<IOrderRepository>(
+    () => OrderRepository(serviceLocator<OrderRemoteDataSource>()),
+  );
+  serviceLocator.registerFactory(
+    () => GetOrdersUseCase(serviceLocator<IOrderRepository>()),
+  );
+  serviceLocator.registerFactory(
+    () => OrderBloc(getOrdersUseCase: serviceLocator<GetOrdersUseCase>()),
+  );
+}
 
 
 // ---------------------- ViewModels ----------------------

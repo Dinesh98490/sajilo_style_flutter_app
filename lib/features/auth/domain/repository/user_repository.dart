@@ -12,4 +12,6 @@ abstract interface class IUserRepository{
 
 
   Future<Either<Failure, UserEntity>> getCurrentUser();
+  Future<Either<Failure, void>> updateProfile(UserEntity user);
+  Future<Either<Failure, void>> changePassword(String oldPassword, String newPassword);
 }

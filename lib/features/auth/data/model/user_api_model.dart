@@ -28,8 +28,21 @@ class UserApiModel  extends Equatable {
     required this.role
   });
 
-  factory UserApiModel.fromJson(Map<String, dynamic> json) =>
-      _$UserApiModelFromJson(json);
+  factory UserApiModel.fromJson(dynamic json) {
+    if (json is Map<String, dynamic>) {
+      return _$UserApiModelFromJson(json);
+    } else {
+      print('UserApiModel.fromJson: expected Map, got  [31m [1m [4m [7m [0m${json.runtimeType}');
+      return UserApiModel(
+        userId: null,
+        fullName: '',
+        email: '',
+        phone_number: '',
+        password: '',
+        role: '',
+      );
+    }
+  }
 
   Map<String, dynamic> toJson() => _$UserApiModelToJson(this);
 
@@ -45,8 +58,6 @@ class UserApiModel  extends Equatable {
       role: role 
     );
   }
-
-
 
   // From entity
   factory UserApiModel.fromEntity(UserEntity entity) {

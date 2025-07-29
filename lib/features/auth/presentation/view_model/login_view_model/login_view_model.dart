@@ -9,7 +9,9 @@ import 'package:sajilo_style/features/auth/presentation/view_model/login_view_mo
 import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_state.dart';
 import 'package:sajilo_style/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
 import 'package:sajilo_style/features/home/presentation/view/home_view.dart';
-import 'package:sajilo_style/features/home/presentation/view_model/home_view_model.dart';
+import 'package:sajilo_style/features/home/presentation/product_view_model/home_view_model.dart';
+import 'package:sajilo_style/features/home/presentation/product_view_model/product_bloc.dart';
+import 'package:sajilo_style/features/home/domain/use_case/product_get_current_usecase.dart';
 
 class LoginViewModel extends Bloc<LoginEvent, LoginState> {
   final UserLoginUsecase _userLoginUsecase;
@@ -48,9 +50,12 @@ class LoginViewModel extends Bloc<LoginEvent, LoginState> {
       Navigator.pushReplacement(
         event.context,
         MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-            value: serviceLocator<HomeViewModel>(),
-            child: const HomeView(),
+          builder: (context) => BlocProvider<ProductBloc>(
+            create: (_) => ProductBloc(getAllProducts: serviceLocator<ProductGetCurrentUsecase>()),
+            child: BlocProvider.value(
+              value: serviceLocator<HomeViewModel>(),
+              child: const HomeView(),
+            ),
           ),
         ),
       );
@@ -86,5 +91,7 @@ class LoginViewModel extends Bloc<LoginEvent, LoginState> {
         }
       },
     );
+
+
   }
 }

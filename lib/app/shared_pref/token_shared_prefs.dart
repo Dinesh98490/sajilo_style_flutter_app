@@ -31,4 +31,15 @@ class TokenSharedPrefs {
       );
     }
   }
+
+  Future<Either<Failure, void>> removeToken() async {
+    try {
+      await _sharedPreferences.remove('token');
+      return Right(null);
+    } catch (e) {
+      return Left(
+        SharedPreferencesFailure(message: 'Failed to remove token: $e'),
+      );
+    }
+  }
 }

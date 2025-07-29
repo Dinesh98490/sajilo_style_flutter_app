@@ -7,7 +7,8 @@ import 'package:sajilo_style/features/auth/presentation/view_model/login_view_mo
 import 'package:sajilo_style/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 import 'package:sajilo_style/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
 import 'package:sajilo_style/features/home/presentation/view/home_view.dart';
-
+import 'package:proximity_sensor/proximity_sensor.dart'; // Requires minSdkVersion 23
+import 'dart:async';
 
 //login view
 class LoginView extends StatefulWidget {
@@ -24,6 +25,61 @@ class _LoginViewState extends State<LoginView> {
 
   bool _obscureText = true;
   bool rememberMe = false;
+
+  StreamSubscription<dynamic>? _proximitySubscription;
+  bool _isLoggingIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _proximitySubscription = ProximitySensor.events.listen(_handleProximityEvent);
+  }
+
+  void _handleProximityEvent(dynamic event) async {
+    if (event > 0 && !_isLoggingIn) {
+      if (_formKey.currentState?.validate() ?? false) {
+        setState(() {
+          _isLoggingIn = true;
+        });
+        context.read<LoginViewModel>().add(
+          LoginWithEmailAndPasswordEvent(
+            context: context,
+            email: emailController.text.trim(),
+            password: passwordController.text,
+          ),
+        );
+        // Wait a bit to avoid multiple triggers
+        await Future.delayed(const Duration(seconds: 2));
+        setState(() {
+          _isLoggingIn = false;
+        });
+      } else {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Invalid Form'),
+              content: const Text('Please fill in email and password correctly.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _proximitySubscription?.cancel();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   void showSnackBar(String message, Color bgColor) {
     ScaffoldMessenger.of(context).showSnackBar(
