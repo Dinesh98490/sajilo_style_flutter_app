@@ -7,8 +7,8 @@ class ApiEndpoints {
 
 
   // For iOS Simulator
-  // static const String serverAddress = "http://localhost:5050";
-  // static const String serverAddress = "http://172.26.20.248:5050";
+  // // static const String serverAddress = "http://localhost:5050";
+  // static const String serverAddress = "http://192.168.1.78:5050";
   static const String serverAddress = "http://10.0.2.2:5050";
 
     // For iPhone (uncomment if needed)
@@ -17,6 +17,8 @@ class ApiEndpoints {
     // authentications
   static const String login = "/login";
   static const String register = "/register";
+  static const String updateProfile="$serverAddress/api/auth/me";
+  static const String changePassword="$serverAddress/api/auth/change-password";
   static const String getProducts="$serverAddress/api/admin/product";
   static const String getme="$baseUrl/me";
   static const String addorgetcart="$serverAddress/api/customer/cart";

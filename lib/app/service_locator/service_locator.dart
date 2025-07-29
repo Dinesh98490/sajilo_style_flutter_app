@@ -31,6 +31,8 @@ import 'package:sajilo_style/features/order/data/data_source/remote_datasource/o
 import 'package:sajilo_style/features/order/data/repository/order_repository.dart';
 import 'package:sajilo_style/features/order/domain/use_case/get_orders_usecase.dart';
 import 'package:sajilo_style/features/order/presentation/view_model/order_bloc.dart';
+import 'package:sajilo_style/features/auth/domain/use_case/user_update_profile_usecase.dart';
+import 'package:sajilo_style/features/auth/domain/use_case/user_change_password_usecase.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -114,6 +116,14 @@ Future<void> _initSharedPrefs() async {
     () => UserGetCurrentUsecase(userRepository: serviceLocator<UserRemoteRepository>()),
   );
 
+  serviceLocator.registerFactory(
+    () => UserUpdateProfileUsecase(userRepository: serviceLocator<UserRemoteRepository>()),
+  );
+
+  serviceLocator.registerFactory(
+    () => UserChangePasswordUsecase(userRepository: serviceLocator<UserRemoteRepository>()),
+  );
+
     serviceLocator.registerFactory(
     () => RegisterViewModel(
      
@@ -159,7 +169,11 @@ Future<void> _initSplashModule()  async {
 
 Future<void> _initProfileModule() async {
   serviceLocator.registerFactory(
-    () => ProfileBloc(getCurrentUser: serviceLocator<UserGetCurrentUsecase>()),
+    () => ProfileBloc(
+      getCurrentUser: serviceLocator<UserGetCurrentUsecase>(),
+      updateProfile: serviceLocator<UserUpdateProfileUsecase>(),
+      changePassword: serviceLocator<UserChangePasswordUsecase>(),
+    ),
   );
 }
 

@@ -8,8 +8,8 @@ abstract interface class IUserDataSource {
 
   Future<UserEntity> getCurrentUser();
 
+  Future<void> updateProfile(UserEntity user);
 
-
-
+  Future<void> changePassword(String oldPassword, String newPassword);
 
 }

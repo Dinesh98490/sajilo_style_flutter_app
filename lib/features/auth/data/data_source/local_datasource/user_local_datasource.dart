@@ -44,4 +44,16 @@ class UserLocalDatasource implements IUserDataSource{
       throw Exception("Registration failed: $e");
     }
   }
+  
+  @override
+  Future<void> updateProfile(UserEntity user) {
+    // TODO: implement updateProfile
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> changePassword(String oldPassword, String newPassword) {
+    // TODO: implement changePassword
+    throw UnimplementedError();
+  }
 }

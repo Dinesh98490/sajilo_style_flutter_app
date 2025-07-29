@@ -100,5 +100,79 @@ class UserRemoteDatasource  implements IUserDataSource{
     }
   }
 
+  @override
+  Future<void> updateProfile(UserEntity user) async {
+    print(user);
+    final tokenResult = await _tokenSharedPrefs.getToken();
+    return tokenResult.fold((failure) => throw Exception(failure.message), (token) async {
+      if (token == null || token.isEmpty) {
+        throw Exception('No token found');
+      }
+      try {
+        final response = await _apiService.dio.put(
+          ApiEndpoints.updateProfile, // should be /me endpoint
+          data: {
+            'fullName': user.fullName,
+            'phone_number': user.phone_number,
+            'email': user.email,
+          },
+          options: Options(headers: {'Authorization': 'Bearer $token'}),
+        );
+        if (response.statusCode == 200) {
+          return;
+        } else if (response.statusCode == 401) {
+          await _tokenSharedPrefs.removeToken();
+          throw Exception('Invalid or expired token. Please log in again.');
+        } else {
+          throw Exception(response.statusMessage);
+        }
+      } on DioException catch (e) {
+        if (e.response?.statusCode == 401) {
+          await _tokenSharedPrefs.removeToken();
+          throw Exception('Invalid or expired token. Please log in again.');
+        }
+        throw Exception('Failed to update profile: \\${e.message}');
+      } catch (e) {
+        throw Exception('Failed to update profile: $e');
+      }
+    });
+  }
+
+  @override
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    final tokenResult = await _tokenSharedPrefs.getToken();
+    return tokenResult.fold((failure) => throw Exception(failure.message), (token) async {
+      if (token == null || token.isEmpty) {
+        throw Exception('No token found');
+      }
+      try {
+        final response = await _apiService.dio.put(
+          ApiEndpoints.changePassword,
+          data: {
+            'oldPassword': oldPassword,
+            'newPassword': newPassword,
+          },
+          options: Options(headers: {'Authorization': 'Bearer $token'}),
+        );
+        if (response.statusCode == 200) {
+          return;
+        } else if (response.statusCode == 401) {
+          await _tokenSharedPrefs.removeToken();
+          throw Exception('Invalid or expired token. Please log in again.');
+        } else {
+          throw Exception(response.statusMessage);
+        }
+      } on DioException catch (e) {
+        if (e.response?.statusCode == 401) {
+          await _tokenSharedPrefs.removeToken();
+          throw Exception('Invalid or expired token. Please log in again.');
+        }
+        throw Exception('Failed to change password: \\${e.message}');
+      } catch (e) {
+        throw Exception('Failed to change password: $e');
+      }
+    });
+  }
+
 
 }

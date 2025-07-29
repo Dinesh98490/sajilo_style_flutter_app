@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'edit_profile_view.dart';
+import 'change_password_view.dart';
+import '../profile_view_model/profile_bloc.dart';
+import '../profile_view_model/profile_event.dart';
+import '../../../../app/service_locator/service_locator.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
@@ -29,13 +35,33 @@ class _SettingsViewState extends State<SettingsView> {
             leading: const Icon(Icons.person, color: Colors.orange),
             title: const Text('Edit Profile'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider(
+                    create: (_) => serviceLocator<ProfileBloc>()..add(FetchProfileEvent()),
+                    child: const EditProfileView(),
+                  ),
+                ),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.lock, color: Colors.orange),
             title: const Text('Change Password'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider(
+                    create: (_) => serviceLocator<ProfileBloc>()..add(FetchProfileEvent()),
+                    child: const ChangePasswordView(),
+                  ),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 24),
           const Text('Preferences', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
